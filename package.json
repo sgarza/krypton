@@ -1,0 +1,29 @@
+{
+  "name": "krypton-orm",
+  "version": "0.0.1",
+  "description": "Krypton is a full featured Javascript ORM for SQL Databases",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sgarza/krypton.git"
+  },
+  "keywords": [
+    "knex",
+    "sql",
+    "postgres",
+    "mysql",
+    "mariadb",
+    "orm",
+    "neon",
+    "neonode"
+  ],
+  "author": "Sergio de la Garza <sergio@delagarza.io>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sgarza/krypton/issues"
+  },
+  "homepage": "https://github.com/sgarza/krypton#readme"
+}
