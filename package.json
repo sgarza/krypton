@@ -20,10 +20,24 @@
     "neon",
     "neonode"
   ],
-  "author": "Sergio de la Garza <sergio@delagarza.io>",
-  "license": "ISC",
+  "author": {
+    "name" : "Sergio de la Garza <sergio@delagarza.io>",
+    "web" : "https://github.com/sgarza"
+  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/sgarza/krypton/issues"
   },
-  "homepage": "https://github.com/sgarza/krypton#readme"
+  "homepage": "https://github.com/sgarza/krypton#readme",
+  "dependencies": {
+    "bluebird": "^2.9.34",
+    "checkit": "^0.5.1",
+    "lodash": "^3.10.1",
+    "neon": "^2.0.0"
+  },
+  "devDependencies": {
+    "knex": "^0.8.6",
+    "mysql": "^2.9.0",
+    "pg": "^4.4.1"
+  }
 }
