@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/sgarza/krypton.svg?branch=master)](https://travis-ci.org/sgarza/krypton)
+[![Code Climate](https://codeclimate.com/github/sgarza/krypton/badges/gpa.svg)](https://codeclimate.com/github/sgarza/krypton)
+[![Test Coverage](https://codeclimate.com/github/sgarza/krypton/badges/coverage.svg)](https://codeclimate.com/github/sgarza/krypton/coverage)
+
+
 W.I.P.
 -----
 
@@ -101,9 +106,12 @@ Entity.relations = {
     ownerCol : 'id',
     relatedCol : 'id',
     scope : ['Entities.type', '=', 'organization'],
-    joinTable : 'EntityOwner',
-    joinTableOwnerCol : 'owner_id',
-    joinTableRelatedCol : 'owned_id'
+    through : {
+        tableName : 'EntityOwner',
+        ownerCol : 'owner_id',
+        relatedCol : 'owned_id'
+        scope : null
+    }
   }
 }
 
