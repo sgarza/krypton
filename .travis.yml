@@ -12,6 +12,10 @@ node_js:
 #   - psql -c 'create database krypton_test;' -U postgres
 #   - mysql -e 'create database krypton_test;'
 
+before_script:
+  - npm install
+  - npm install istanbul -g
+
 addons:
   code_climate:
     repo_token:
