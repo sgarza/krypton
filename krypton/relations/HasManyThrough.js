@@ -12,11 +12,15 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
 
         joinQuery
           .select(relation.ownerModel.tableName + '.' + relation.ownerCol,
-            relation.joinTable + '.' + relation.joinTableRelatedCol)
-          .leftOuterJoin(relation.joinTable,
-            relation.joinTable + '.' + relation.joinTableOwnerCol,
+            relation.through.tableName + '.' + relation.through.relatedCol)
+          .leftOuterJoin(relation.through.tableName,
+            relation.through.tableName + '.' + relation.through.ownerCol,
             relation.ownerModel.tableName + '.' + relation.ownerCol)
           .where(relation.ownerModel.tableName + '.' + relation.ownerCol, '=', record[relation.ownerCol]);
+
+        if (relation.through.scope) {
+          joinQuery.andWhere.apply(joinQuery, relation.through.scope);
+        }
 
         joinQuery.then(function(joinResults) {
             var relatedIds = joinResults.map(function(item) {

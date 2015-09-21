@@ -9,23 +9,27 @@ Krypton.Relation.HasOne = Class(Krypton.Relation, 'HasOne').inherits(Krypton.Rel
 
       var query = relation.relatedModel.query();
 
-      return query.whereIn(relation.relatedCol, recordIds)
-        .then(function(result) {
+      query.whereIn(relation.relatedCol, recordIds);
 
-          records.forEach(function(record) {
-            var asoc = result.filter(function(item) {
-              if (item[relation.relatedCol] === record[relation.ownerCol]) {
-                return true;
-              }
-            })[0];
+      if (relation.scope) {
+        query.andWhere.apply(query, relation.scope);
+      }
 
-            record[relation.name] = query._createRecordInstances([asoc])[0];
-          });
+      return query.then(function(result) {
+        records.forEach(function(record) {
+          var asoc = result.filter(function(item) {
+            if (item[relation.relatedCol] === record[relation.ownerCol]) {
+              return true;
+            }
+          })[0];
 
-          return records.map(function(item) {
-            return item[relation.name]
-          });
+          record[relation.name] = query._createRecordInstances([asoc])[0];
         });
+
+        return records.map(function(item) {
+          return item[relation.name]
+        });
+      });
     }
   }
 });

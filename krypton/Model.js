@@ -49,12 +49,15 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
 
   primaryKey : 'id',
 
-  validations : {
-    username : ['maxLength:3']
-  },
+  validations : {},
+
   relations : {},
 
   query : function() {
+    if (!this.tableName) {
+      throw new Error('Model doesn\'t have a table name');
+    }
+
     var klass = this;
 
     this._loadRelations();
@@ -96,7 +99,11 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
         klass = proto && proto.constructor;
       }
 
-      return klass && klass._knex;
+      if (klass && klass._knex) {
+        return klass && klass._knex;
+      } else  {
+        throw new Error('Model doesn\'t have a knex instance');;
+      }
     }
   },
 
@@ -107,6 +114,10 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
   },
 
   knexQuery : function() {
+    if (!this.tableName) {
+      throw new Error('Model doesn\'t have a table name');
+    }
+
     return this.knex().table(this.tableName);
   },
 
@@ -135,7 +146,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
       promise = this.isValid();
 
       promise = promise.then(function(isValid) {
-        var values = model._getValues();
+        var values = model._getAttributes();
 
         for (var i = 0; i < model.preprocessors.length; i++) {
           values = model.preprocessors[i](values);
@@ -209,7 +220,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
 
     },
 
-    _getValues : function() {
+    _getAttributes : function() {
       var model = this;
 
       var values = _.clone(model);

@@ -6,9 +6,14 @@ Krypton.Relation = Class(Krypton, 'Relation')({
     ownerCol : null,
     relatedCol : null,
     scope : null,
-    joinTable : null,
-    joinTableOwnerCol : null,
-    joinTableRelatedCol : null,
+    /*
+    through : {
+      tableName : null,
+      ownerCol : null,
+      relatedCol : null,
+      scope : null
+    } */
+    through : null,
 
     init : function(config) {
       Object.keys(config || {}).forEach(function (propertyName) {

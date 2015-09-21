@@ -4,7 +4,7 @@
   "description": "Krypton is a full featured Javascript ORM for SQL Databases",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test" : "istanbul cover _mocha -- --slow 10 --timeout 5000 --reporter spec --recursive tests",
   },
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
     "neonode"
   ],
   "author": {
-    "name" : "Sergio de la Garza <sergio@delagarza.io>",
-    "web" : "https://github.com/sgarza"
+    "name": "Sergio de la Garza <sergio@delagarza.io>",
+    "web": "https://github.com/sgarza"
   },
   "license": "MIT",
   "bugs": {
@@ -36,7 +36,9 @@
     "neon": "^2.0.0"
   },
   "devDependencies": {
+    "chai": "^3.3.0",
     "knex": "^0.8.6",
+    "mocha": "^2.3.3",
     "mysql": "^2.9.0",
     "pg": "^4.4.1"
   }
