@@ -1,0 +1,19 @@
+# .travis.yml
+sudo: false
+
+language: node_js
+
+node_js:
+  - '0.12'
+  - '4.0.0'
+  - '4.1.0'
+
+# before_script:
+#   - psql -c 'create database krypton_test;' -U postgres
+#   - mysql -e 'create database krypton_test;'
+
+addons:
+  code_climate:
+    repo_token:
+      secure: "XhutValGRJFMIZ+wqEpsB+oVzK91Ud/3VH6Z6m8EpCM6TSaQqJlb6WCr8KbhQMU7RktPd7/f+4VgJmSTWhOrNBWRLr+jI+QxcTzugnyqEAEBF9Kr74GBpUi0LWcDI3tJvB5q9oESunkOkXPcq//VjuVZTWDTLORMDG5GJWrChK2cTU3bLvVzS5HReKvLcDKCAhhQCSDoswF/JPTXSXqy1DlwgJ3ufk3es+dhIhtFVeihcf/WmwHv9awt9J0z7PYH7Vs3KHq9htNL+lv24ixPpabokcQNroQ+TK9ZtzqNiV/8XC/P3WAqBqOA1HNuspfjv7fxT4R8EcSkUd+vf67Ac/0a42spvTKZJyfWUSwMlVXDvpzQSHR9C6Jgp2VcUaF3o+xhUzhmCLeVbNNhb6BoL+Awi7umA+hz26q7CAeiOEQfNLnKzG/dPyd4xn56hJszP1xgKeOyJE+vRu58SWdiR864kTEOHx8+n5o+MtZgh0UmCqzVR9eF70lYms4+We7A+8KlLyFvG9wHSr3WVXN7GOIxAnw+zvxlr5hgU15RvivvBLW6jzGKL6vLm+tCUhxxqorrltKgzf0bSCk2SIDUQZvEqzaDuSUw7GXoXbvydIzx7+R6f3KTA6xWeR9i0hiq3YgLErMRtmCK+yn9RBz1iT4xgThHkaFHn6/tE72CrU4="
+  postgresql: '9.4'
