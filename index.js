@@ -13,4 +13,17 @@ require('./krypton/QueryBuilder');
 require('./krypton/ValidationSupport');
 require('./krypton/Model');
 
+var Knex = require('knex');
+// var pg = require('pg');
+
+var knex = Knex({
+    client : 'postgres',
+    connection: {
+        database: 'crowdvoice.by',
+        user:     'sgarza',
+        password: ''
+    }
+});
+
+
 module.exports = global.Krypton;

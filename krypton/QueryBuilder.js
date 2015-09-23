@@ -73,7 +73,7 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
       var builder = this;
 
       if (!this._eagerExpression) {
-        return records;
+        return this._createRecordInstances(records);
       }
 
       var promises = [];

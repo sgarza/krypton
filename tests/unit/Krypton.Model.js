@@ -11,7 +11,7 @@ describe('Krypton.Model Unit Tests', function() {
 
     var model = new MyModel();
 
-    expect(model).is.an.instanceof(MyModel)
+    expect(model).is.an.instanceof(MyModel);
   });
 
   it('Should fail if Model doesn\'t have a tableName', function() {
@@ -19,7 +19,6 @@ describe('Krypton.Model Unit Tests', function() {
 
     expect(MyModel.query.bind(MyModel, 'query')).to.throw(Error);
     expect(MyModel.knexQuery.bind(MyModel, 'knexQuery')).to.throw(Error);
-
   });
 
   it('Should parse relation declarations', function() {
@@ -53,7 +52,6 @@ describe('Krypton.Model Unit Tests', function() {
             relatedCol : 'like_id'
           }
         }
-
       }
     });
 
@@ -105,7 +103,7 @@ describe('Krypton.Model Unit Tests', function() {
     expect(User._relations.address).is.an.instanceof(Krypton.Relation.HasOne);
     expect(User._relations.addresses).is.an.instanceof(Krypton.Relation.HasMany);
     expect(User._relations.likes).is.an.instanceof(Krypton.Relation.HasManyThrough);
-  })
+  });
 
   it('Knex instance is inherited from super classes', function() {
     var knex = Knex({client : 'pg'});
@@ -118,7 +116,7 @@ describe('Krypton.Model Unit Tests', function() {
 
     Class('User2').inherits(User)({
       tableName : 'Users'
-    })
+    });
 
     expect(User.knex()).to.equal(knex);
     expect(User2.knex()).to.equal(knex);
@@ -145,10 +143,4 @@ describe('Krypton.Model Unit Tests', function() {
 
     expect(sql).to.equal('SELECT * FROM "Model" WHERE "id" = \'1\'');
   });
-
-
-
-
-
-
 });

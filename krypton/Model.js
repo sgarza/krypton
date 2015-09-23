@@ -129,11 +129,11 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
         this[propertyName] = config[propertyName];
       }, this);
 
-      if (this._preprocessors instanceof Array === false){
-        this._preprocessors = [].concat(this.constructor.preprocessors);
-      } else {
-        this._preprocessors = this._preprocessors.concat(this.constructor.preprocessors);
-      }
+      // if (this._preprocessors instanceof Array === false){
+      //   this._preprocessors = [].concat(this.constructor.preprocessors);
+      // } else {
+      //   this._preprocessors = this._preprocessors.concat(this.constructor.preprocessors);
+      // }
 
       return this;
     },

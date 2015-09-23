@@ -38,7 +38,7 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     andWhere : queryMethod('andWhere'),
 
-    orWhere : queryMethod('andWhere'),
+    orWhere : queryMethod('orWhere'),
 
     whereIn : queryMethod('whereIn'),
 

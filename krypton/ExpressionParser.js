@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 Class(Krypton, 'ExpressionNode')({
   prototype : {
     init : function(name) {
@@ -14,7 +16,12 @@ Class(Krypton, 'ExpressionParser')({
     },
 
     parse : function() {
-      return new Krypton.Expression(this._parse(this.expression));
+      if (!_.isString(this.expression) || !this.expression) {
+        return new Krypton.Expression([]);
+
+      } else {
+        return new Krypton.Expression(this._parse(this.expression));
+      }
     },
 
     _parse : function(expression) {
