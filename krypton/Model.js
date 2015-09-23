@@ -122,8 +122,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
   },
 
   prototype : {
-    _preprocessors : null,
-
     init : function(config) {
       Object.keys(config || {}).forEach(function (propertyName) {
         this[propertyName] = config[propertyName];

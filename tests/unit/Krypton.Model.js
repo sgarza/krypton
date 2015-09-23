@@ -21,6 +21,29 @@ describe('Krypton.Model Unit Tests', function() {
     expect(MyModel.knexQuery.bind(MyModel, 'knexQuery')).to.throw(Error);
   });
 
+  it('If attributes are given, Should remove all but attributes properties from database representation', function() {
+    Class('Model').inherits(Krypton.Model)({
+      tableName : 'Model',
+
+      attributes : {
+        id : null,
+        title : null
+      }
+    });
+
+    var model = new Model({
+      id : 1,
+      title : 'title',
+      description : 'description'
+    });
+
+    var json = model._getAttributes();
+
+    expect(json.id).is.equal(1);
+    expect(json.title).is.equal('title');
+    expect(json.description).to.be.undefined;
+  });
+
   it('Should parse relation declarations', function() {
 
     Class('Address').inherits(Krypton.Model)({});
