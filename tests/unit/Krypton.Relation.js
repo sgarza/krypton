@@ -217,5 +217,17 @@ describe('Krypton.Relation', function() {
     expect(relation).to.throw(Error);
   });
 
+  it('fetch should throw an error', function() {
+    var relation = new Krypton.Relation({
+      ownerModel : OwnerModel,
+      relatedModel : RelatedModel,
+      ownerCol : 'related_col_id',
+      relatedCol : 'id'
+    });
+
+    expect(relation).is.an.instanceof(Krypton.Relation);
+    expect(function(){return relation.fetch()}).to.throw(Error);
+  });
+
 
 });

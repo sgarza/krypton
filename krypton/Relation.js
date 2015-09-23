@@ -60,8 +60,7 @@ Krypton.Relation = Class(Krypton, 'Relation')({
     },
 
     fetch : function() {
-      console.log('Not implemented');
-      return false;
+      throw Error('Not implemented');
     }
   }
 });
