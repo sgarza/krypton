@@ -9,14 +9,15 @@ require('./../../');
 
 describe('Integration Tests', function() {
   var databaseConfig;
-
-  if (process.env.NODE_ENV === 'test') {
+  console.log('ENV', process.env.NODE_ENV)
+  if (process.env.NODE_ENV == 'test') {
     databaseConfig = [
       {
         client : 'postgres',
         connection: {
           host : '127.0.0.1',
-          database : 'krypton_test'
+          database : 'krypton_test',
+          user : 'travis'
         }
       }
     ]
