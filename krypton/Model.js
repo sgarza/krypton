@@ -146,8 +146,8 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
       promise = promise.then(function(isValid) {
         var values = model._getAttributes();
 
-        for (var i = 0; i < model.preprocessors.length; i++) {
-          values = model.preprocessors[i](values);
+        for (var i = 0; i < model.constructor.preprocessors.length; i++) {
+          values = model.constructor.preprocessors[i](values);
         }
 
         if (!model.id) {
@@ -186,6 +186,14 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
         .returning(primaryKey)
         .then(function(data) {
           model[primaryKey] = data[0];
+
+          if (values.hasOwnProperty('created_at')) {
+            model.createdAt = values.created_at;
+          }
+
+          if (values.hasOwnProperty('updated_at')) {
+            model.updatedAt = values.updated_at;
+          }
 
           return data;
         }).catch(function(err) {

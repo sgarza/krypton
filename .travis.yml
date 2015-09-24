@@ -8,9 +8,11 @@ node_js:
   - '4.0.0'
   - '4.1.0'
 
-# before_script:
-#   - psql -c 'create database krypton_test;' -U postgres
-#   - mysql -e 'create database krypton_test;'
+env:
+  - NODE_ENV=test
+
+before_script:
+  - psql -c 'create database krypton_test;' -U postgres
 
 before_script:
   - npm install
