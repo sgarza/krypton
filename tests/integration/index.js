@@ -10,7 +10,7 @@ require('./../../');
 describe('Integration Tests', function() {
   var databaseConfig;
 
-  if (process.env === 'test') {
+  if (process.env.NODE_ENV === 'test') {
     databaseConfig = [
       {
         client : 'postgres',
