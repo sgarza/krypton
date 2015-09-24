@@ -4,6 +4,7 @@ var os = require('os');
 var path = require('path');
 var Promise = require('bluebird');
 var Utils = require('./Utils');
+var Checkit = require('checkit');
 
 require('./../../');
 
@@ -47,5 +48,37 @@ module.exports = function(session) {
         expect(model.updatedAt).is.an.instanceOf(Date);
       });
     });
+
+    it('Should Pass the Model validations', function() {
+      Model1.validations = {
+        property1 : ['required']
+      }
+
+      var model = new Model1({
+        property1 : 'Hello 1'
+      });
+
+      return model.save().then(function(result) {
+        expect(result).to.have.length(1);
+        expect(model.id).is.eql(result[0]);
+      });
+    });
+
+    it('Should Fail the Model validations', function() {
+      Model1.validations = {
+        property1 : ['required']
+      }
+
+      var model = new Model1({
+        property2 : 1
+      });
+
+      return model.save().then(function(result) {
+        expect(model.errors).to.exists;
+        expect(model.id).to.be.undfined;
+      });
+    });
+
+
   });
 }

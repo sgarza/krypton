@@ -127,12 +127,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
         this[propertyName] = config[propertyName];
       }, this);
 
-      // if (this._preprocessors instanceof Array === false){
-      //   this._preprocessors = [].concat(this.constructor.preprocessors);
-      // } else {
-      //   this._preprocessors = this._preprocessors.concat(this.constructor.preprocessors);
-      // }
-
       return this;
     },
 
@@ -156,7 +150,8 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
           return model._update(values);
         }
 
-      }).catch(function(err) {
+      })
+      .catch(function(err) {
         model.errors = err
         return model;
       });
@@ -203,10 +198,12 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
     },
 
     _update : function(values) {
+      var model = this;
+
       var primaryKey = this.constructor.primaryKey;
 
       if (values.hasOwnProperty('updated_at')) {
-        values.updatedAt = new Date();
+        values.updated_at = new Date();
       }
 
       return this.constructor.knexQuery()
@@ -214,16 +211,18 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
         .update(values)
         .returning(primaryKey)
         .then(function(data) {
+          if (values.hasOwnProperty('updated_at')) {
+            model.updatedAt = values.updated_at;
+          }
           return data;
         }).catch(function(err) {
           console.error('Query Error', err);
-
           return err;
         });
     },
 
     destroy : function() {
-
+      throw new Error('Not Implemented');
     },
 
     _getAttributes : function() {

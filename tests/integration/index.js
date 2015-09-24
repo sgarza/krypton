@@ -46,6 +46,7 @@ describe('Integration Tests', function() {
       });
 
       require('./insert')(session);
+      require('./update')(session);
 
     })
   })
