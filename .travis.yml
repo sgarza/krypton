@@ -12,9 +12,7 @@ env:
   - NODE_ENV=test
 
 before_script:
-  - psql -c 'create database krypton_test;' -U postgres
-
-before_script:
+  - psql -c 'create database krypton_test;' -U travis
   - npm install
   - npm install istanbul -g
 

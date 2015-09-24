@@ -27,9 +27,7 @@ describe('Integration Tests', function() {
         client : 'postgres',
         connection: {
           host : '127.0.0.1',
-          database : 'krypton_test',
-          user : 'sgarza',
-          password : ''
+          database : 'krypton_test'
         }
       }
     ]
