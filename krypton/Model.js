@@ -36,7 +36,15 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
 
             sanitizedData.push(sanitizedItem);
           } else {
-            sanitizedData.push(item);
+            var sanitizedItem = {};
+
+            for (var property in item) {
+              if (item.hasOwnProperty(property)) {
+                sanitizedItem[_.camelCase(property)] = item[property];
+              }
+            }
+
+            sanitizedData.push(sanitizedItem);
           }
         });
       }
