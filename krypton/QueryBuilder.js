@@ -34,7 +34,13 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
 
       promise = promise.then(function(records) {
         return builder._eagerFetch(records);
+      }).then(function(records) {
+        return records
       });
+
+      // promise = promise.then(function(records) {
+      //   return builder._createRecordInstances(records);
+      // })
 
       return promise;
     },
@@ -72,46 +78,44 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
     _eagerFetch : function(records) {
       var builder = this;
 
-      if (!this._eagerExpression) {
-        return this._createRecordInstances(records);
-      }
+      records =  builder._createRecordInstances(records);
 
       var promises = [];
 
-      var nodes = this._eagerExpression.nodes;
+      if (this._eagerExpression) {
+        var nodes = this._eagerExpression.nodes;
 
-      var currentModel = builder.ownerModel;
+        var currentModel = builder.ownerModel;
 
-      var currentRecords = records;
+        var currentRecords = records;
 
-      var iterate = function(a) {
-        return Promise.map(a, function(currentNode) {
-          var p;
+        var iterate = function(a) {
+          return Promise.map(a, function(currentNode) {
+            var p;
 
-          if (currentModel._relations[currentNode.name]) {
-            console.log(currentNode.name)
-            p =  currentModel._relations[currentNode.name].fetch(currentRecords).then(function(res) {
-              currentRecords = res;
+            if (currentModel._relations[currentNode.name]) {
+              p =  currentModel._relations[currentNode.name].fetch(currentRecords).then(function(res) {
+                currentRecords = res;
 
-              if (currentNode.children.length > 0) {
-                currentModel = currentModel._relations[currentNode.name].relatedModel;
+                if (currentNode.children.length > 0) {
+                  currentModel = currentModel._relations[currentNode.name].relatedModel;
 
-                return iterate(currentNode.children);
-              }
-            });
-          }
+                  return iterate(currentNode.children);
+                }
+              });
+            }
 
-          if (p) {
-            return p;
-          }
-        });
-      };
+            if (p) {
+              return p;
+            }
+          });
+        };
 
-      var promises = iterate(builder._eagerExpression.nodes);
+        promises = iterate(builder._eagerExpression.nodes);
+      }
 
       var promise = Promise.all(promises)
         .then(function() {
-          records =  builder._createRecordInstances(records);
           return records;
         });
 

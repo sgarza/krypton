@@ -9,7 +9,7 @@ require('./../../');
 
 describe('Integration Tests', function() {
   var databaseConfig;
-  console.log('ENV', process.env.NODE_ENV)
+
   if (process.env.NODE_ENV == 'test') {
     databaseConfig = [
       {
@@ -41,13 +41,14 @@ describe('Integration Tests', function() {
         return session.createDB();
       });
 
-      after(function() {
-        return session.destroy();
-      });
-
       require('./insert')(session);
       require('./update')(session);
+      require('./query')(session);
 
-    })
-  })
+      // after(function() {
+      //   return session.destroy();
+      // });
+
+    });
+  });
 });

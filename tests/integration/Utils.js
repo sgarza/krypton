@@ -42,8 +42,8 @@ var IntegrationTestUtils = Module('IntegrationTestUtils')({
           relatedCol : 'id',
           through : {
             tableName : 'Model1Model2',
-            ownerCol : 'model2_id',
-            relatedCol : 'model1_id'
+            ownerCol : 'model_2_id',
+            relatedCol : 'model_1_id'
           }
         }
       }
@@ -53,14 +53,14 @@ var IntegrationTestUtils = Module('IntegrationTestUtils')({
       model1Relation1 : {
         type : 'HasOne',
         relatedModel : Model1,
-        ownerCol : 'model1_id',
+        ownerCol : 'model_1_id',
         relatedCol : 'id'
       },
       model1Relation2 : {
         type : 'HasMany',
         relatedModel : Model2,
         ownerCol : 'id',
-        relatedCol : 'model1_id'
+        relatedCol : 'model_1_id'
       }
     }
 

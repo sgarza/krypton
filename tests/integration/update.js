@@ -40,7 +40,6 @@ module.exports = function(session) {
         var oldUpdatedAt = new Date(model.updatedAt);
 
         return model.save().then(function(result) {
-          console.log('res', result)
           expect(result).to.have.length(1);
           expect(model.id).is.eql(result[0]);
           expect(model.updatedAt).is.not.eql(oldUpdatedAt);

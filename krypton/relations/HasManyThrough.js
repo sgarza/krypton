@@ -24,7 +24,7 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
 
         joinQuery.then(function(joinResults) {
             var relatedIds = joinResults.map(function(item) {
-              return item[relation.joinTableRelatedCol];
+              return item[relation.through.relatedCol];
             });
 
             relatedQuery.whereIn(relation.relatedCol, relatedIds)
@@ -36,7 +36,7 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
 
         return joinQuery.then(function() {
           return relatedQuery.then(function(results) {
-            record[relation.name] = relatedQuery._createRecordInstances(results);
+            record[relation.name] = results;
           });
         })
       });

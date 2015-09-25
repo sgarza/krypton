@@ -1,10 +1,12 @@
+var _ = require('lodash');
+
 Krypton.Relation.HasMany = Class(Krypton.Relation, 'HasMany').inherits(Krypton.Relation)({
   prototype : {
     fetch : function(records) {
       var relation = this;
 
       var recordIds = records.map(function(item) {
-        return item[relation.ownerCol];
+        return item[_.camelCase(relation.ownerCol)];
       });
 
       var query = relation.relatedModel.query();
@@ -18,12 +20,12 @@ Krypton.Relation.HasMany = Class(Krypton.Relation, 'HasMany').inherits(Krypton.R
       return query.then(function(result) {
         records.forEach(function(record) {
           var asoc = result.filter(function(item) {
-            if (item[relation.relatedCol] === record[relation.ownerCol]) {
+            if (item[_.camelCase(relation.relatedCol)] === record[_.camelCase(relation.ownerCol)]) {
               return true;
             }
           });
 
-          record[relation.name] = query._createRecordInstances(asoc);
+          record[relation.name] = asoc;
         });
 
         return records.map(function(item) {
