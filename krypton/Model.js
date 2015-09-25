@@ -230,7 +230,20 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
     },
 
     destroy : function() {
-      throw new Error('Not Implemented');
+      var model = this;
+
+      var primaryKey = this.constructor.primaryKey;
+
+      var whereClause = {};
+      whereClause[primaryKey] = model[primaryKey];
+
+      return this.constructor.query()
+        .delete()
+        .where(whereClause)
+        .then(function() {
+          model[primaryKey] = null;
+          return model;
+        });
     },
 
     _getAttributes : function() {

@@ -44,6 +44,7 @@ describe('Integration Tests', function() {
       require('./insert')(session);
       require('./update')(session);
       require('./query')(session);
+      require('./destroy')(session);
 
       // after(function() {
       //   return session.destroy();

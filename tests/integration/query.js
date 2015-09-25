@@ -58,9 +58,6 @@ module.exports = function(session) {
 
         return model1.save().then(function(res) {
           return relatedModel.save().then(function() {
-            session.knex.on('query', function(data) {
-              // console.log(data)
-            })
             return Model1.query()
               .where({id : 2})
               .include('model1Relation1')
@@ -98,10 +95,6 @@ module.exports = function(session) {
           relatedModel1.save(),
           relatedModel2.save()
         ]).then(function() {
-          session.knex.on('query', function(data) {
-            // console.log(data)
-          })
-
           return Model1.query()
             .where({id : 1})
             .include('model1Relation2')
