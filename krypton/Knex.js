@@ -32,7 +32,41 @@ Krypton.Knex = Module(Krypton, 'Knex')({
       return knexBuilder;
     },
 
+    insert : queryMethod('insert'),
+
+    update : queryMethod('update'),
+
+    patch : queryMethod('patch'),
+
+    delete : queryMethod('delete'),
+
     select : queryMethod('select'),
+
+    from : queryMethod('from'),
+
+    into : queryMethod('into'),
+
+    table : queryMethod('table'),
+
+    distinct : queryMethod('distinct'),
+
+    join : queryMethod('join'),
+
+    innerJoin : queryMethod('innerJoin'),
+
+    leftJoin : queryMethod('leftJoin'),
+
+    leftOuterJoin : queryMethod('leftOuterJoin'),
+
+    rightJoin : queryMethod('rightJoin'),
+
+    rightOuterJoin : queryMethod('rightOuterJoin'),
+
+    outerJoin : queryMethod('outerJoin'),
+
+    fullOuterJoin : queryMethod('fullOuterJoin'),
+
+    crossJoin : queryMethod('crossJoin'),
 
     where : queryMethod('where'),
 
@@ -40,11 +74,75 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     orWhere : queryMethod('orWhere'),
 
+    whereRaw : queryMethod('whereRaw'),
+
+    whereExists : queryMethod('whereExists'),
+
+    orWhereExists : queryMethod('orWhereExists'),
+
+    whereNotExists : queryMethod('whereNotExists'),
+
+    orWhereNotExists : queryMethod('orWhereNotExists'),
+
     whereIn : queryMethod('whereIn'),
 
-    join : queryMethod('join'),
+    orWhereIn : queryMethod('orWhereIn'),
 
-    leftOuterJoin : queryMethod('leftOuterJoin'),
+    whereNotIn : queryMethod('whereNotIn'),
+
+    orWhereNotIn : queryMethod('orWhereNotIn'),
+
+    whereNull : queryMethod('whereNull'),
+
+    orWhereNull : queryMethod('orWhereNull'),
+
+    whereNull : queryMethod('whereNotNull'),
+
+    orWhereNull : queryMethod('orWhereNotNull'),
+
+    whereBetween : queryMethod('whereBetween'),
+
+    whereNotBetween : queryMethod('whereNotBetween'),
+
+    orWhereBetween : queryMethod('orWhereBetween'),
+
+    orWhereNotBetween : queryMethod('orWhereNotBetween'),
+
+    groupBy : queryMethod('groupBy'),
+
+    orderBy : queryMethod('orderBy'),
+
+    union : queryMethod('union'),
+
+    unionAll : queryMethod('unionAll'),
+
+    having : queryMethod('having'),
+
+    havingRaw : queryMethod('havingRaw'),
+
+    offset : queryMethod('offset'),
+
+    limit : queryMethod('limit'),
+
+    count : queryMethod('count'),
+
+    min : queryMethod('min'),
+
+    max : queryMethod('max'),
+
+    sum : queryMethod('sum'),
+
+    avg : queryMethod('avg'),
+
+    increment : queryMethod('increment'),
+
+    decrement : queryMethod('decrement'),
+
+    debug : queryMethod('debug'),
+
+    returning : queryMethod('returning'),
+
+    truncate : queryMethod('truncate')
   }
 });
 
