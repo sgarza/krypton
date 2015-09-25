@@ -23,6 +23,7 @@ __*__ _Work in progress_
 
 - Build arround [Neon](https://github.com/azendal/neon/)
 - Use [Knex](http://knex.org) as the query builder
+- DB **column_names** must be **snake_case**
 - Don't handle migrations
 - Don't handle database schema creation
 
@@ -30,11 +31,8 @@ __*__ _Work in progress_
 ### TODO
 
 - This README
-- Finish Eager Loader Relations.
-- Finish transactions
-- Finish the Knex Proxy
-- Unit Testing
-- Integration Testing
+- Add more relation types, currently there are HasOne, HasMany and HasManyThrough.
+- Add transactions
 
 ### Examples
 
