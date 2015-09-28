@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/sgarza/krypton.svg?branch=master)](https://travis-ci.org/sgarza/krypton)
 [![Code Climate](https://codeclimate.com/github/sgarza/krypton/badges/gpa.svg)](https://codeclimate.com/github/sgarza/krypton)
 [![Test Coverage](https://codeclimate.com/github/sgarza/krypton/badges/coverage.svg)](https://codeclimate.com/github/sgarza/krypton/coverage)
+[![NPM](https://nodei.co/npm/krypton-orm.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/krypton-orm)
 
 
 W.I.P.
