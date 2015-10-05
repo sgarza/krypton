@@ -61,6 +61,9 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
 
   relations : {},
 
+  attributes : [],
+
+
   query : function() {
     if (!this.tableName) {
       throw new Error('Model doesn\'t have a table name');
@@ -253,11 +256,9 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport, Cust
 
       var sanitizedData = {};
 
-      for (var property in model.constructor.attributes) {
-        if (model.constructor.attributes.hasOwnProperty(property)) {
-          sanitizedData[property] = values[property] || null;
-        }
-      }
+      model.constructor.attributes.forEach(function(attribute) {
+        sanitizedData[attribute] = values[attribute] || null;
+      });
 
       return sanitizedData;
     }

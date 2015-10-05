@@ -16,24 +16,12 @@ var IntegrationTestUtils = Module('IntegrationTestUtils')({
 
     Class('Model1').inherits(Krypton.Model)({
       tableName : 'Model1',
-      attributes : {
-        id        : null,
-        model1Id  : null,
-        property1 : null,
-        property2 : null
-      }
+      attributes : ['id', 'model1Id', 'property1', 'property2']
     });
 
     Class('Model2').inherits(Krypton.Model)({
       tableName : 'Model2',
-      attributes : {
-        id : null,
-        model1Id : null,
-        property1 : null,
-        property2 : null,
-        createdAt : null,
-        updatedAt : null
-      },
+      attributes : ['id', 'model1Id', 'property1', 'property2', 'createdAt', 'updatedAt'],
       relations : {
         model2Relation1 : {
           type : 'HasManyThrough',

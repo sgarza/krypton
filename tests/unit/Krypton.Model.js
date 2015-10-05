@@ -25,10 +25,7 @@ describe('Krypton.Model Unit Tests', function() {
     Class('Model').inherits(Krypton.Model)({
       tableName : 'Model',
 
-      attributes : {
-        id : null,
-        title : null
-      }
+      attributes : ['id', 'title']
     });
 
     var model = new Model({

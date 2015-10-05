@@ -1,6 +1,6 @@
 {
   "name": "krypton-orm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Krypton is a full featured Javascript ORM for SQL Databases",
   "main": "index.js",
   "scripts": {
