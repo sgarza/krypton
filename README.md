@@ -64,28 +64,16 @@ Class('Voice').inherits(Krypton.Model)({
   tableName : 'Voices',
 
   /*
-    attributes are not the database schema! Nothing is generated
-    based on this. This is only used for validation (whitelist) at saving. Whenever a
+    attributes are used for validation (whitelist) at saving. Whenever a
     model instance is saved it is checked against this schema.
   */
-  attributes : {
-    id : null,
-    title : null,
-    description : null,
-    createdAt : null,
-    updatedAt : null
-  },
+  attributes : ['id', 'title', 'description', 'createdAt', 'updatedAt']
 });
 
 Class('Entity').inherits(Krypton.Model)({
   tableName : 'Entities',
 
-  attributes : {
-    id : null,
-    ...
-    createdAt : null,
-    updatedAt : null
-  },
+  attributes : ['id', ..., 'createdAt', 'updatedAt']
 })
 
 // This object defines the relations to other models.
@@ -117,12 +105,7 @@ Entity.relations = {
 Class('User').inherits(Krypton.Model)({
   tableName : 'Users',
 
-  attributes : {
-    id : null,
-    ...
-    createdAt : null,
-    updatedAt : null
-  },
+  attributes : ['id', ..., 'createdAt', 'updatedAt'],
 
   relations : {
     entity : {
