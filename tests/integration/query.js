@@ -147,7 +147,8 @@ module.exports = function(session) {
           model1_1.save(),
           model1_2.save(),
           model2_1.save(),
-          model2_2.save()
+          model2_2.save(),
+
         ]).then(function() {
           return joinTable.then(function() {
             return Model2.query()
@@ -159,7 +160,6 @@ module.exports = function(session) {
                 expect(result[0].model2Relation1).to.have.length(2);
                 expect(result[0].model2Relation1[0]).is.an.instanceOf(Model1)
                 expect(result[0].model2Relation1[1]).is.an.instanceOf(Model1)
-                expect(result[1].model2Relation1).to.have.length(1);
                 expect(result[1].model2Relation1[0]).is.an.instanceOf(Model1)
               });
           });

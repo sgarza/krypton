@@ -138,3 +138,60 @@ userQuery.then(function(result) {
 });
 
 ```
+
+#### ActiveRecord Style callbacks
+
+Callbacks are hooks into the life cycle of an Krypton Model instance that allow you to trigger logic before or after an alteration of the object state.
+
+ - Implemented callbacks:
+    - beforeValidation
+    - afterValidation
+    - beforeSave
+    - beforeCreate
+    - beforeUpdate
+    - afterCreate
+    - afterUpdate
+    - afterSave
+
+API:
+```javascript
+// @property on <public> [Function]
+// @method
+// @argument hook <required> [String]
+// @argument handler(callback) <required> [Function]
+// @return this;
+```
+
+Examples:
+
+```javascript
+Model('User').inherits(Krypton.Model)({
+    prototype : {
+        init : function(config) {
+            Krypton.Model.prototype.init.call(this, config);
+
+            var model = this;
+
+            model.on('beforeValidation', function(next) {
+                bcrypt.hash(model.password, null, null, function(err, hash) {
+                    model.encryptedPassword = hash;
+                    delete model.password;
+                    next();
+                });
+            });
+
+            model.on('beforeValidation', function(next) {
+                model.count++
+            });
+        }
+    }
+});
+```
+
+OR
+
+```javascript
+var user = new User();
+
+user.on('beforeUpdate', handler(callback))
+```

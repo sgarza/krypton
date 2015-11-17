@@ -46,10 +46,6 @@ describe('Integration Tests', function() {
       require('./query')(session);
       require('./destroy')(session);
 
-      // after(function() {
-      //   return session.destroy();
-      // });
-
     });
   });
 });
