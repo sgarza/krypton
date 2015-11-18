@@ -14,17 +14,3 @@ require('./krypton/ValidationSupport');
 require('./krypton/Model');
 
 module.exports = global.Krypton;
-
-
-var Knex = require('knex');
-// var pg = require('pg');
-
-global.knex = Knex({
-    client : 'postgres',
-    connection: {
-        database: 'crowdvoice.by',
-        user:     'sgarza',
-        password: ''
-    }
-});
-global.Promise = require('bluebird');

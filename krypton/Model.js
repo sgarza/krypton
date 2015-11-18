@@ -26,9 +26,8 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     if (data instanceof Array) {
       if (data.length > 0) {
         data.forEach(function(item) {
+          var sanitizedItem = {};
           if (item instanceof Object) {
-            var sanitizedItem = {};
-
             for (var property in item) {
               if (item.hasOwnProperty(property)) {
                 sanitizedItem[_.camelCase(property)] = item[property];
@@ -37,8 +36,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
             sanitizedData.push(sanitizedItem);
           } else {
-            var sanitizedItem = {};
-
             for (var property in item) {
               if (item.hasOwnProperty(property)) {
                 sanitizedItem[_.camelCase(property)] = item[property];
@@ -114,7 +111,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       if (klass && klass._knex) {
         return klass && klass._knex;
       } else  {
-        throw new Error('Model doesn\'t have a knex instance');;
+        throw new Error('Model doesn\'t have a knex instance');
       }
     }
   },
@@ -163,16 +160,15 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       // AfterValidation
       var afterValidation = Promise.defer();
 
-      promise.then(function(isValid) {
-
+      promise.then(function() {
         async.eachSeries(model._afterValidation || [], function(handler, callback) {
-          handler(callback)
+          handler(callback);
         }, function(err) {
           afterValidation.resolve(err);
         });
       })
       .catch(function(err) {
-        model.errors = err
+        model.errors = err;
         afterValidation.resolve(err);
         return model;
       });
@@ -187,7 +183,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         var beforeSave = Promise.defer();
 
         async.eachSeries(model._beforeSave || [], function(handler, callback) {
-          handler(callback)
+          handler(callback);
         }, function(err) {
           beforeSave.resolve(err);
         });
@@ -250,7 +246,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
       }).catch(function(err) {
         return err;
-      })
+      });
     },
 
     _create : function(values) {
@@ -313,7 +309,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         }).catch(function(err) {
           console.error('Query Error', err);
           return err;
-        })
+        });
     },
 
     _update : function(values) {

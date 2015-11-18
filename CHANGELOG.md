@@ -1,3 +1,6 @@
+## 2015-11-17, Version 0.0.4
+ - Clean-up code
+
 ## 2015-11-17, Version 0.0.3
  - Add ActiveRecord style callbacks (See README);
 
