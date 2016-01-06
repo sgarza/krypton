@@ -4,6 +4,7 @@ var Promise = require('bluebird');
 Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
   prototype : {
     ownerModel : null,
+    knex : null,
 
     _eagerExpression : null,
 
@@ -90,10 +91,10 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
         var currentRecords = records;
 
         var iterate = function(a) {
-          return Promise.map(a, function(currentNode) {
+          return Promise.each(a, function(currentNode) {
             var p;
 
-            if (currentModel._relations[currentNode.name]) {
+            if (currentModel._relations.hasOwnProperty(currentNode.name)) {
               p =  currentModel._relations[currentNode.name].fetch(currentRecords).then(function(res) {
                 currentRecords = res;
 
@@ -111,7 +112,7 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
           });
         };
 
-        promises = iterate(builder._eagerExpression.nodes);
+        promises = iterate(nodes);
       }
 
       var promise = Promise.all(promises)

@@ -9,7 +9,7 @@ Krypton.Relation.HasOne = Class(Krypton.Relation, 'HasOne').inherits(Krypton.Rel
         return item[_.camelCase(relation.ownerCol)];
       });
 
-      var query = relation.relatedModel.query();
+      var query = relation.relatedModel.query(this.knex);
 
       query.whereIn(relation.relatedCol, recordIds);
 

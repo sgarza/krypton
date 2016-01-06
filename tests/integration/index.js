@@ -8,30 +8,15 @@ var Utils = require('./Utils');
 require('./../../');
 
 describe('Integration Tests', function() {
-  var databaseConfig;
-
-  if (process.env.NODE_ENV == 'test') {
-    databaseConfig = [
-      {
-        client : 'postgres',
-        connection: {
-          host : '127.0.0.1',
-          database : 'krypton_test',
-          user : 'travis'
-        }
+  var databaseConfig = [
+    {
+      client : 'postgres',
+      connection: {
+        host : '127.0.0.1',
+        database : 'krypton_test'
       }
-    ]
-  } else {
-    databaseConfig = [
-      {
-        client : 'postgres',
-        connection: {
-          host : '127.0.0.1',
-          database : 'krypton_test'
-        }
-      }
-    ]
-  }
+    }
+  ];
 
   _.each(databaseConfig, function(knexConfig) {
     var session = Utils.initialize({ knexConfig : knexConfig });

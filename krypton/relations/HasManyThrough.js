@@ -7,8 +7,15 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
       var relation = this;
 
       var promises = _.map(records, function(record) {
-        var joinQuery = Krypton.Model.knex().table(relation.ownerModel.tableName);
-        var relatedQuery = relation.relatedModel.query();
+        var joinQuery;
+
+        if (relation.knex) {
+          joinQuery = relation.knex.table(relation.ownerModel.tableName);
+        } else {
+          joinQuery = relation.ownerModel.knex().table(relation.ownerModel.tableName);
+        }
+
+        var relatedQuery = relation.relatedModel.query(relation.knex);
 
         joinQuery
           .select(relation.ownerModel.tableName + '.' + relation.ownerCol,

@@ -9,7 +9,7 @@ Krypton.Relation.HasMany = Class(Krypton.Relation, 'HasMany').inherits(Krypton.R
         return item[_.camelCase(relation.ownerCol)];
       });
 
-      var query = relation.relatedModel.query();
+      var query = relation.relatedModel.query(this.knex);
 
       query.whereIn(relation.relatedCol, recordIds);
 

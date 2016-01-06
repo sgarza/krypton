@@ -23,7 +23,13 @@ Krypton.Knex = Module(Krypton, 'Knex')({
     _queryMethodCalls : null,
 
     _build : function() {
-      var knexBuilder = this.ownerModel.knexQuery();
+      var knexBuilder;
+
+      if (this.knex) {
+        knexBuilder = this.knex.table(this.ownerModel.tableName);
+      } else {
+        knexBuilder = this.ownerModel.knexQuery();
+      }
 
       _.each(this._queryMethodCalls, function (call) {
         knexBuilder[call.method].apply(knexBuilder, call.args);

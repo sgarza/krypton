@@ -12,7 +12,30 @@ var IntegrationTestUtils = Module('IntegrationTestUtils')({
 
     this.knex = knex;
 
-    Krypton.Model.knex(knex);
+    // Krypton.Model.knex();
+
+    Class('DynamicModel1').inherits(Krypton.Model)({
+      tableName : 'Model1',
+      attributes : ['id', 'model1Id', 'property1', 'property2']
+    });
+
+    Class('DynamicModel2').inherits(Krypton.Model)({
+      tableName : 'Model2',
+      attributes : ['id', 'model1Id', 'property1', 'property2', 'createdAt', 'updatedAt'],
+      relations : {
+        dynamicModel2Relation1 : {
+          type : 'HasManyThrough',
+          relatedModel : DynamicModel1,
+          ownerCol : 'id',
+          relatedCol : 'id',
+          through : {
+            tableName : 'Model1Model2',
+            ownerCol : 'model_2_id',
+            relatedCol : 'model_1_id'
+          }
+        }
+      }
+    })
 
     Class('Model1').inherits(Krypton.Model)({
       tableName : 'Model1',
@@ -37,6 +60,11 @@ var IntegrationTestUtils = Module('IntegrationTestUtils')({
       }
     });
 
+
+
+    Model1.knex(knex);
+    Model2.knex(knex);
+
     Model1.relations = {
       model1Relation1 : {
         type : 'HasOne',
@@ -47,6 +75,21 @@ var IntegrationTestUtils = Module('IntegrationTestUtils')({
       model1Relation2 : {
         type : 'HasMany',
         relatedModel : Model2,
+        ownerCol : 'id',
+        relatedCol : 'model_1_id'
+      }
+    }
+
+    DynamicModel1.relations = {
+      dynamicModel1Relation1 : {
+        type : 'HasOne',
+        relatedModel : DynamicModel1,
+        ownerCol : 'model_1_id',
+        relatedCol : 'id'
+      },
+      dynamicModel1Relation2 : {
+        type : 'HasMany',
+        relatedModel : DynamicModel2,
         ownerCol : 'id',
         relatedCol : 'model_1_id'
       }

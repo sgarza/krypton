@@ -1,3 +1,7 @@
+## 2016-01-06, Version 0.0.5
+ - Add the ability to dynamically set a knex instance to Krypton.Model SubClases
+  and to Krypton.Model instances
+
 ## 2015-11-17, Version 0.0.4
  - Clean-up code
 

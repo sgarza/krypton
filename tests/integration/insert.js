@@ -5,6 +5,15 @@ var path = require('path');
 var Promise = require('bluebird');
 var Utils = require('./Utils');
 var Checkit = require('checkit');
+var Knex = require('knex');
+
+var databaseConfig = {
+  client : 'postgres',
+  connection: {
+    host : '127.0.0.1',
+    database : 'krypton_test'
+  }
+};
 
 require('./../../');
 
@@ -20,6 +29,21 @@ module.exports = function(session) {
       return model.save().then(function(result) {
         expect(result).to.have.length(1);
         expect(model.id).is.eql(result[0]);
+      });
+    });
+
+    it('Should insert a new model with a custom knex instance set on save()', function() {
+
+      var model1 = new DynamicModel1({
+        property1 : 'Hello Dynamic 1',
+        property2 : 1
+      });
+
+      var knex = new Knex(databaseConfig);
+
+      return model1.save(knex).then(function(result) {
+        expect(result).to.have.length(1);
+        expect(model1.id).is.eql(result[0]);
       });
     });
 
@@ -296,7 +320,6 @@ module.exports = function(session) {
       model.on('afterSave', function(next) {
         Model2.query().then(function(res) {
           model.count = res.length;
-          console.log('afterSave')
           next();
         });
       });

@@ -1,6 +1,6 @@
 {
   "name": "krypton-orm",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Krypton is a full featured Javascript ORM for SQL Databases",
   "main": "index.js",
   "scripts": {
@@ -34,6 +34,7 @@
     "bluebird": "^3.0.5",
     "checkit": "^0.6.0",
     "lodash": "^3.10.1",
+    "mysql": "^2.10.0",
     "neon": "^2.0.0",
     "pg": "^4.4.3"
   },
@@ -41,8 +42,6 @@
     "chai": "^3.3.0",
     "codeclimate-test-reporter": "^0.1.1",
     "knex": "^0.9.0",
-    "mocha": "^2.3.3",
-    "mysql": "^2.9.0",
-    "pg": "^4.4.3"
+    "mocha": "^2.3.3"
   }
 }

@@ -62,38 +62,49 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
   attributes : [],
 
 
-  query : function() {
+  query : function(knex) {
     if (!this.tableName) {
       throw new Error('Model doesn\'t have a table name');
     }
 
-    var klass = this;
+    this._loadRelations(knex);
 
-    this._loadRelations();
+    var options = {};
 
-    return new Krypton.QueryBuilder({
-      ownerModel : klass
-    });
+    options.ownerModel = this;
+
+    if (knex) {
+      options.knex = knex;
+    }
+
+    return new Krypton.QueryBuilder(options);
   },
 
-  _loadRelations : function() {
+  _loadRelations : function(knex) {
 
     var relations = this.relations;
 
+    var result = {};
+
     for (var relation in relations) {
+
       if (relations.hasOwnProperty(relation)) {
-        if (!this._relations[relation]) {
-          var config = this.relations[relation];
+        var config = this.relations[relation];
 
-          config.name = relation;
-          config.ownerModel = this;
+        config.name = relation;
+        config.ownerModel = this;
 
-          var relationInstance = new Krypton.Relation[config.type](config);
-
-          this._relations[relation] = relationInstance;
+        if (knex) {
+          config.knex = knex;
         }
+
+        var relationInstance = new Krypton.Relation[config.type](config);
+
+        result[relation] = relationInstance;
       }
     }
+
+    this._relations = result;
   },
 
   knex : function(knex) {
@@ -150,8 +161,17 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       return this;
     },
 
-    save : function() {
+    updateAttributes : function(obj) {
+      _.assign(this, obj);
+      return this;
+    },
+
+    save : function(knex) {
       var model = this;
+
+      if (knex) {
+        model._knex = knex;
+      }
 
       var promise = Promise.resolve();
 
@@ -266,7 +286,15 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         delete values[primaryKey];
       }
 
-      return this.constructor.knexQuery()
+      var knex;
+
+      if (this._knex) {
+        knex = this._knex.table(this.constructor.tableName);
+      } else {
+        knex = this.constructor.knexQuery();
+      }
+
+      return knex
         .insert(values)
         .returning(primaryKey)
         .then(function(data) {
@@ -286,6 +314,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
           async.eachSeries(model._afterCreate || [], function(handler, callback) {
             handler(callback);
           }, function(err) {
+            // throw new Error(err);
             afterCreate.resolve(err);
           });
 
@@ -321,7 +350,15 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         values.updated_at = new Date();
       }
 
-      return this.constructor.knexQuery()
+      var knex;
+
+      if (this._knex) {
+        knex = this._knex.table(this.constructor.tableName);
+      } else {
+        knex = this.constructor.knexQuery();
+      }
+
+      return knex
         .where(primaryKey, '=', values[primaryKey])
         .update(values)
         .returning(primaryKey)
@@ -362,15 +399,27 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         });
     },
 
-    destroy : function() {
+    destroy : function(knex) {
       var model = this;
+
+      if (knex) {
+        this._knex = knex;
+      }
 
       var primaryKey = this.constructor.primaryKey;
 
       var whereClause = {};
       whereClause[primaryKey] = model[primaryKey];
 
-      return this.constructor.query()
+      var knex;
+
+      if (this._knex) {
+        knex = this._knex.table(this.constructor.tableName);
+      } else {
+        knex = this.constructor.knexQuery();
+      }
+
+      return knex
         .delete()
         .where(whereClause)
         .then(function() {

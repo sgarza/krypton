@@ -5,6 +5,15 @@ var path = require('path');
 var Promise = require('bluebird');
 var Utils = require('./Utils');
 var Checkit = require('checkit');
+var Knex = require('knex');
+
+var databaseConfig = {
+  client : 'postgres',
+  connection: {
+    host : '127.0.0.1',
+    database : 'krypton_test'
+  }
+};
 
 require('./../../');
 
@@ -14,7 +23,7 @@ module.exports = function(session) {
     it('Should return all rows when no knex methods are chained', function() {
       return Model1.query()
         .then(function(result) {
-          expect(result).to.have.length(2);
+          expect(result).to.have.length(3);
           expect(result[0]).is.an.instanceOf(Model1);
           expect(result[1]).is.an.instanceOf(Model1);
           expect(result[0].id).to.eql(1);
@@ -29,7 +38,7 @@ module.exports = function(session) {
           .query()
           .select('property_1')
           .then(function(result) {
-            expect(result).to.have.length(2);
+            expect(result).to.have.length(3);
             expect(result[0]).is.an.instanceOf(Model1);
             expect(result[1]).is.an.instanceOf(Model1);
 
@@ -72,6 +81,35 @@ module.exports = function(session) {
         });
       });
 
+      it('Should load a HasOne relation with a custom knex instance on query()', function() {
+        var model1 = new DynamicModel1({
+          property1 : 'Hello 1 Dynamic',
+          property2 : 1
+        });
+
+        var relatedModel = new DynamicModel1({
+          model1Id : 1,
+          property1 : 'Hello 2 Dynamic',
+          property2: 2
+        });
+
+        var knex = new Knex(databaseConfig);
+
+        return model1.save(knex).then(function(res) {
+          return relatedModel.save(knex).then(function() {
+            return DynamicModel1.query(knex)
+              .where({id : 2})
+              .include('dynamicModel1Relation1')
+              .then(function(result) {
+                expect(result).to.have.length(1);
+                expect(result[0]).is.an.instanceOf(DynamicModel1);
+                expect(result[0].dynamicModel1Relation1).is.an.instanceOf(DynamicModel1);
+                expect(result[0].dynamicModel1Relation1.id).is.eql(1);
+              });
+          });
+        });
+      });
+
       it('Should load a HasMany relation', function() {
         var model1 = new Model1({
           property1 : 'Hello 1',
@@ -107,6 +145,43 @@ module.exports = function(session) {
         });
       });
 
+      it('Should load a HasMany relation with a custom knex instance on query()', function() {
+        var model1 = new DynamicModel1({
+          property1 : 'Hello 1 Dynamic',
+          property2 : 1
+        });
+
+        var relatedModel1 = new DynamicModel2({
+          model1Id : 1,
+          property1 : 'Hello 2 Dynamic',
+          property2: 2
+        });
+
+        var relatedModel2 = new DynamicModel2({
+          model1Id : 1,
+          property1 : 'Hello 3 Dynamic',
+          property2: 2
+        });
+
+        var knex = new Knex(databaseConfig);
+
+        return Promise.all([
+          model1.save(knex),
+          relatedModel1.save(knex),
+          relatedModel2.save(knex)
+        ]).then(function() {
+          return DynamicModel1.query(knex)
+            .where({id : 1})
+            .include('dynamicModel1Relation2')
+            .then(function(result) {
+              expect(result).to.have.length(1);
+              expect(result[0].dynamicModel1Relation2).to.have.length(2);
+              expect(result[0].dynamicModel1Relation2[0]).is.an.instanceOf(DynamicModel2);
+              expect(result[0].dynamicModel1Relation2[1]).is.an.instanceOf(DynamicModel2);
+            })
+        });
+      });
+
       it('Should load a HasManyThrough relation', function() {
         var model1_1 = new Model1({
           property1 : 'Hello 1_1',
@@ -124,7 +199,7 @@ module.exports = function(session) {
           property1 : 'Hello 2_2',
         });
 
-        var joinTable = Krypton.Model.knex().table('Model1Model2')
+        var joinTable = Model1.knex().table('Model1Model2')
           .insert([
             {
               id : 1,
@@ -161,6 +236,68 @@ module.exports = function(session) {
                 expect(result[0].model2Relation1[0]).is.an.instanceOf(Model1)
                 expect(result[0].model2Relation1[1]).is.an.instanceOf(Model1)
                 expect(result[1].model2Relation1[0]).is.an.instanceOf(Model1)
+              });
+          });
+
+        });
+      });
+
+      it('Should load a HasManyThrough relation with a custom knex instance on query()', function() {
+        var model1_1 = new DynamicModel1({
+          property1 : 'Hello 1_1 Dyn',
+        });
+
+        var model1_2 = new DynamicModel1({
+          property1 : 'Hello 1_2 Dyn',
+        });
+
+        var model2_1 = new DynamicModel2({
+          property1 : 'Hello 2_1 Dyn',
+        });
+
+        var model2_2 = new DynamicModel2({
+          property1 : 'Hello 2_2 Dyn',
+        });
+
+        var knex = new Knex(databaseConfig);
+
+        var joinTable = knex.table('Model1Model2')
+          .insert([
+            {
+              id : 1,
+              model_1_id : 1,
+              model_2_id : 1
+            },
+            {
+              id : 2,
+              model_1_id : 1,
+              model_2_id : 2
+            },
+            {
+              id : 3,
+              model_1_id : 2,
+              model_2_id : 1
+            }
+          ]);
+
+        return Promise.all([
+          model1_1.save(knex),
+          model1_2.save(knex),
+          model2_1.save(knex),
+          model2_2.save(knex),
+
+        ]).then(function() {
+          return joinTable.then(function() {
+            return DynamicModel2.query(knex)
+              .include('dynamicModel2Relation1')
+              .then(function(result) {
+                expect(result).to.have.length(2);
+                expect(result[0]).is.an.instanceOf(DynamicModel2);
+                expect(result[1]).is.an.instanceOf(DynamicModel2);
+                expect(result[0].dynamicModel2Relation1).to.have.length(2);
+                expect(result[0].dynamicModel2Relation1[0]).is.an.instanceOf(DynamicModel1)
+                expect(result[0].dynamicModel2Relation1[1]).is.an.instanceOf(DynamicModel1)
+                expect(result[1].dynamicModel2Relation1[0]).is.an.instanceOf(DynamicModel1)
               });
           });
 

@@ -4,6 +4,16 @@ var os = require('os');
 var path = require('path');
 var Promise = require('bluebird');
 var Utils = require('./Utils');
+var Knex = require('knex');
+
+var databaseConfig = {
+  client : 'postgres',
+  connection: {
+    host : '127.0.0.1',
+    database : 'krypton_test'
+  }
+};
+
 
 require('./../../');
 
@@ -21,6 +31,25 @@ module.exports = function(session) {
         expect(model.id).is.eql(result[0]);
 
         return model.save().then(function(result) {
+          expect(result).to.have.length(1);
+          expect(model.id).is.eql(result[0]);
+        })
+      });
+    });
+
+    it('Should insert and update a model with a custom knex instance set on save()', function() {
+      var model = new DynamicModel2({
+        property1 : 'Hello 1 Dynamic',
+        property2 : 1
+      });
+
+      var knex = new Knex(databaseConfig);
+
+      return model.save(knex).then(function(result) {
+        expect(result).to.have.length(1);
+        expect(model.id).is.eql(result[0]);
+
+        return model.save(knex).then(function(result) {
           expect(result).to.have.length(1);
           expect(model.id).is.eql(result[0]);
         })
