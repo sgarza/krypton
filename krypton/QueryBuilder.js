@@ -90,9 +90,14 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
 
         var currentRecords = records;
 
-        var iterate = function(a) {
+        var iterate = function(a, isRoot) {
           return Promise.each(a, function(currentNode) {
             var p;
+
+            if (isRoot) {
+              currentModel = builder.ownerModel;
+              currentRecords = records;
+            }
 
             if (currentModel._relations.hasOwnProperty(currentNode.name)) {
               p =  currentModel._relations[currentNode.name].fetch(currentRecords).then(function(res) {
@@ -112,7 +117,9 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
           });
         };
 
-        promises = iterate(nodes);
+
+
+        promises = iterate(nodes, true);
       }
 
       var promise = Promise.all(promises)

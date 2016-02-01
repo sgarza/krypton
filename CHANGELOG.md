@@ -1,3 +1,6 @@
+## 2016-02-01, Version 0.0.7
+- Fix eagerFetcher recursive iteration loop
+
 ## 2016-02-01, Version 0.0.6
 - Fix record context in QueryBuilder eagerFetcher
 

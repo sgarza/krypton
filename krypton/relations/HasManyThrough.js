@@ -51,7 +51,7 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
       return Promise.all(promises).then(function() {
         return _.map(records, function(item) {
           return item[relation.name];
-        });
+        })[0];
       });
     }
   }
