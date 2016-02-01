@@ -1,3 +1,6 @@
+## 2016-02-01, Version 0.0.6
+- Fix record context in QueryBuilder eagerFetcher
+
 ## 2016-01-06, Version 0.0.5
  - Add the ability to dynamically set a knex instance to Krypton.Model SubClases
   and to Krypton.Model instances

@@ -96,9 +96,9 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
 
             if (currentModel._relations.hasOwnProperty(currentNode.name)) {
               p =  currentModel._relations[currentNode.name].fetch(currentRecords).then(function(res) {
-                currentRecords = res;
 
                 if (currentNode.children.length > 0) {
+                  currentRecords = res;
                   currentModel = currentModel._relations[currentNode.name].relatedModel;
 
                   return iterate(currentNode.children);
