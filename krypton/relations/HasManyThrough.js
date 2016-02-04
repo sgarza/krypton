@@ -29,7 +29,8 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
           joinQuery.andWhere.apply(joinQuery, relation.through.scope);
         }
 
-        joinQuery.then(function(joinResults) {
+        return joinQuery
+          .then(function(joinResults) {
             var relatedIds = joinResults.map(function(item) {
               return item[relation.through.relatedCol];
             });
@@ -39,13 +40,12 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
             if (relation.scope) {
               relatedQuery.andWhere.apply(relatedQuery, relation.scope);
             }
+          })
+          .then(function() {
+            return relatedQuery.then(function(results) {
+              record[relation.name] = results;
+            });
           });
-
-        return joinQuery.then(function() {
-          return relatedQuery.then(function(results) {
-            record[relation.name] = results;
-          });
-        })
       });
 
       return Promise.all(promises).then(function() {
