@@ -42,7 +42,7 @@ module.exports = function(session) {
             expect(result[0]).is.an.instanceOf(Model1);
             expect(result[1]).is.an.instanceOf(Model1);
 
-            expect(_.unique(_.flattenDeep(_.map(result, _.keys))).sort()).to.eql(['property1']);
+            expect(_.uniq(_.flattenDeep(_.map(result, _.keys))).sort()).to.eql(['property1']);
           });
       });
 
