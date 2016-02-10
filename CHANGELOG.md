@@ -1,3 +1,6 @@
+## 2016-02-09, Version 0.0.8
+- Fix race condition in HasManyThrough
+
 ## 2016-02-01, Version 0.0.7
 - Fix eagerFetcher recursive iteration loop
 
