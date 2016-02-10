@@ -16,7 +16,7 @@ var queryMethod = function(methodName) {
 
     return this;
   };
-}
+};
 
 Krypton.Knex = Module(Krypton, 'Knex')({
   prototype : {

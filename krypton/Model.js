@@ -20,6 +20,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
     return sanitizedData;
   }],
+
   processors : [function(data) {
     var sanitizedData = [];
 
@@ -436,7 +437,11 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       var sanitizedData = {};
 
       model.constructor.attributes.forEach(function(attribute) {
-        sanitizedData[attribute] = values[attribute] || null;
+        if (_.isUndefined(values[attribute])) {
+          sanitizedData[attribute] = null;
+        } else {
+          sanitizedData[attribute] = values[attribute];
+        }
       });
 
       return sanitizedData;
