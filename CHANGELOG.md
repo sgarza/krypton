@@ -1,3 +1,6 @@
+## 2016-02-09, Version 0.0.9
+- Fix a lodash deprecated method
+
 ## 2016-02-09, Version 0.0.8
 - Fix race condition in HasManyThrough
 
