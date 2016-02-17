@@ -148,7 +148,11 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     returning : queryMethod('returning'),
 
-    truncate : queryMethod('truncate')
+    truncate : queryMethod('truncate'),
+
+    toSQL : queryMethod('toSQL'),
+
+    as : queryMethod('as')
   }
 });
 
