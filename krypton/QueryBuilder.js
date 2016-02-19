@@ -23,6 +23,12 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
       return promise.then.apply(promise, arguments);
     },
 
+    toSQL : function() {
+      var knexBuilder = this._build();
+
+      return knexBuilder.toSQL();
+    },
+
     _execute : function() {
       var builder = this;
       var promise = Promise.resolve();
