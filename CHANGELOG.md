@@ -1,3 +1,7 @@
+## 2016-02-17, Version 0.0.10
+- Add missing .as Knex method
+- Fix bug where false attributes were turning into null
+
 ## 2016-02-09, Version 0.0.9
 - Fix a lodash deprecated method
 
