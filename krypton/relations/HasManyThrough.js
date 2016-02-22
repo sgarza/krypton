@@ -7,44 +7,25 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
       var relation = this;
 
       var promises = _.map(records, function(record) {
-        var joinQuery;
+        var query = relation.relatedModel.query(relation.knex);
 
-        if (relation.knex) {
-          joinQuery = relation.knex.table(relation.ownerModel.tableName);
-        } else {
-          joinQuery = relation.ownerModel.knex().table(relation.ownerModel.tableName);
+        query
+          .select(relation.relatedModel.tableName + '.*')
+          .from(relation.relatedModel.tableName)
+          .leftJoin(
+            relation.through.tableName,
+            relation.relatedModel.tableName + '.' + relation.relatedCol,
+            relation.through.tableName + '.' + relation.through.relatedCol
+          )
+          .where(relation.through.tableName + '.' + relation.through.ownerCol, '=', record[relation.ownerCol]);
+
+        if (relation.scope) {
+          query.andWhere.apply(query, relation.scope);
         }
 
-        var relatedQuery = relation.relatedModel.query(relation.knex);
-
-        joinQuery
-          .select(relation.ownerModel.tableName + '.' + relation.ownerCol,
-            relation.through.tableName + '.' + relation.through.relatedCol)
-          .leftOuterJoin(relation.through.tableName,
-            relation.through.tableName + '.' + relation.through.ownerCol,
-            relation.ownerModel.tableName + '.' + relation.ownerCol)
-          .where(relation.ownerModel.tableName + '.' + relation.ownerCol, '=', record[relation.ownerCol]);
-
-        if (relation.through.scope) {
-          joinQuery.andWhere.apply(joinQuery, relation.through.scope);
-        }
-
-        return joinQuery
-          .then(function(joinResults) {
-            var relatedIds = joinResults.map(function(item) {
-              return item[relation.through.relatedCol];
-            });
-
-            relatedQuery.whereIn(relation.relatedCol, relatedIds)
-
-            if (relation.scope) {
-              relatedQuery.andWhere.apply(relatedQuery, relation.scope);
-            }
-          })
-          .then(function() {
-            return relatedQuery.then(function(results) {
-              record[relation.name] = results;
-            });
+        return query
+          .then(function(results) {
+            record[relation.name] = results;
           });
       });
 
@@ -57,4 +38,4 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
   }
 });
 
-module.exports = Krypton.Relation.HasMany;
+module.exports = Krypton.Relation.HasManyThrough;

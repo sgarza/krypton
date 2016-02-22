@@ -23,6 +23,12 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
       return promise.then.apply(promise, arguments);
     },
 
+    toSQL : function() {
+      var knexBuilder = this._build();
+
+      return knexBuilder.toSQL();
+    },
+
     _execute : function() {
       var builder = this;
       var promise = Promise.resolve();
@@ -58,7 +64,6 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
         records = builder.ownerModel.processors[i](records);
       }
 
-
       if (records.length > 0 && _.isObject(records[0])) {
         for (var i = 0, l = records.length; i < l; ++i) {
           records[i] = new this.ownerModel(records[i]);
@@ -90,9 +95,9 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
 
         var currentRecords = records;
 
-        var iterate = function(a, isRoot) {
-          return Promise.each(a, function(currentNode) {
-            var p;
+        var iterate = function(nodes, isRoot) {
+          return Promise.each(nodes, function(currentNode) {
+            var promise;
 
             if (isRoot) {
               currentModel = builder.ownerModel;
@@ -100,8 +105,7 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
             }
 
             if (currentModel._relations.hasOwnProperty(currentNode.name)) {
-              p =  currentModel._relations[currentNode.name].fetch(currentRecords).then(function(res) {
-
+              promise = currentModel._relations[currentNode.name].fetch(currentRecords).then(function(res) {
                 if (currentNode.children.length > 0) {
                   currentRecords = res;
                   currentModel = currentModel._relations[currentNode.name].relatedModel;
@@ -111,13 +115,11 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
               });
             }
 
-            if (p) {
-              return p;
+            if (promise) {
+              return promise;
             }
           });
         };
-
-
 
         promises = iterate(nodes, true);
       }
@@ -130,4 +132,4 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
       return promise;
     }
   }
-})
+});
