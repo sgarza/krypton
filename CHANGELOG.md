@@ -1,3 +1,8 @@
+## 2016-02-22, Version 0.0.11
+- Add .toSQL() support and optimize HasManyThrough relation
+- Add Istanbul to package.json dev dependencies, This is so you can run `npm run test` without having to have had installed instanbul globally.
+- Variable name refactor in QueryBuilder
+
 ## 2016-02-17, Version 0.0.10
 - Add missing .as Knex method
 - Fix bug where false attributes were turning into null
