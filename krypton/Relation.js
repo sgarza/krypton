@@ -22,7 +22,7 @@ Krypton.Relation = Class(Krypton, 'Relation')({
         throw new Error('Must provide an ownerModel');
       }
 
-      if (config.ownerModel.superClass !== Krypton.Model) {
+      if (config.ownerModel.superClass.className !== Krypton.Model.className) {
         throw new Error('ownerModel is not a subclass of Krypton.Model');
       }
 
@@ -30,7 +30,7 @@ Krypton.Relation = Class(Krypton, 'Relation')({
         throw new Error('Must provide a relatedModel');
       }
 
-      if (config.relatedModel.superClass !== Krypton.Model) {
+      if (config.relatedModel.superClass.className !== Krypton.Model.className) {
         throw new Error('relatedModel is not a subclass of Krypton.Model');
       }
 

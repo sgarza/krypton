@@ -82,7 +82,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
   },
 
   _loadRelations : function(knex) {
-
     var relations = this.relations;
 
     var result = {};
