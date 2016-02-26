@@ -17,6 +17,10 @@ Krypton.Relation.HasMany = Class(Krypton.Relation, 'HasMany').inherits(Krypton.R
         query.andWhere.apply(query, relation.scope);
       }
 
+      if (relation.orderBy) {
+        query.orderBy.apply(query, relation.orderBy);
+      }
+
       return query.then(function(result) {
         records.forEach(function(record) {
           var asoc = result.filter(function(item) {
