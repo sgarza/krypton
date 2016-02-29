@@ -23,6 +23,10 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inhe
           query.andWhere.apply(query, relation.scope);
         }
 
+        if (relation.orderBy) {
+          query.orderBy.apply(query, relation.orderBy);
+        }
+
         return query
           .then(function(results) {
             record[relation.name] = results;
