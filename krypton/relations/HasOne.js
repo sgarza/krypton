@@ -25,7 +25,11 @@ Krypton.Relation.HasOne = Class(Krypton.Relation, 'HasOne').inherits(Krypton.Rel
             }
           })[0];
 
-          record[relation.name] = asoc;
+          if (_.isUndefined(asoc)) {
+            record[relation.name] = null;
+          } else {
+            record[relation.name] = asoc;
+          }
         });
 
         return records.map(function(item) {
