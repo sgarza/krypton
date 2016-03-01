@@ -213,7 +213,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
             throw new Error(err);
           }
 
-          if (!model.id) {
+          if (!model[model.primaryKey]) {
             // beforeCreate hooks
             var beforeCreate = Promise.defer();
 
