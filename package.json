@@ -24,6 +24,9 @@
     "name": "Sergio de la Garza <sergio@delagarza.io>",
     "web": "https://github.com/sgarza"
   },
+  "contributors": [
+    "Eduardo Lavaque <me@greduan.com> (http://greduan.com)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sgarza/krypton/issues"
