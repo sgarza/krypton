@@ -112,7 +112,7 @@ module.exports = function(session) {
 
   });
 
-  describe('Model Hooks', function() {
+  describe('Model Save Hooks', function() {
     it('Should execute beforeValidation hooks in order', function() {
       Model2.validations = {};
 
@@ -268,34 +268,11 @@ module.exports = function(session) {
     });
 
 
-    it('Should execute afterCreate hooks in order', function() {
-      Model2.validations = {};
-
-      var model = new Model2();
-
-      model.on('afterCreate', function(next) {
-        Model2.query().then(function(res) {
-          model.count = res.length;
-          next();
-        });
-      });
-
-      model.on('afterCreate', function(next) {
-        model.count++;
-        next();
-      });
-
-      return model.save().then(function(res) {
-        expect(model.count).to.be.eql(9);
-      })
-
-    });
-
     it('Should execute afterUpdate hooks in order', function() {
       Model2.validations = {};
 
       var model = new Model2({
-        id : 8
+        id : 7
       });
 
       model.on('afterUpdate', function(next) {
@@ -311,7 +288,7 @@ module.exports = function(session) {
       });
 
       return model.save().then(function(res) {
-        expect(model.count).to.be.eql(9);
+        expect(model.count).to.be.eql(8);
       })
 
     });
@@ -320,7 +297,7 @@ module.exports = function(session) {
       Model2.validations = {};
 
       var model = new Model2({
-        id : 8
+        id : 7
       });
 
       model.on('afterSave', function(next) {
@@ -336,7 +313,7 @@ module.exports = function(session) {
       });
 
       return model.save().then(function(res) {
-        expect(model.count).to.be.eql(9);
+        expect(model.count).to.be.eql(8);
       })
 
     });

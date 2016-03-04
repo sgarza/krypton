@@ -1,6 +1,5 @@
 var _ = require('lodash');
 var Promise = require('bluebird');
-var async = require('async');
 
 var runHooks = require('./utils/run-hooks.js');
 
@@ -346,26 +345,43 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         this._knex = knex;
       }
 
-      var primaryKey = this.constructor.primaryKey;
+      return new Promise(function (resolve, reject) {
+        Promise.resolve()
+          .then(function () {
+            return runHooks(model._beforeDestroy);
+          })
+          .then(function () {
+            var primaryKey = model.constructor.primaryKey;
 
-      var whereClause = {};
-      whereClause[primaryKey] = model[primaryKey];
+            var whereClause = {};
+            whereClause[primaryKey] = model[primaryKey];
 
-      var knex;
+            var knex;
 
-      if (this._knex) {
-        knex = this._knex.table(this.constructor.tableName);
-      } else {
-        knex = this.constructor.knexQuery();
-      }
+            if (model._knex) {
+              knex = model._knex.table(this.constructor.tableName);
+            } else {
+              knex = model.constructor.knexQuery();
+            }
 
-      return knex
-        .delete()
-        .where(whereClause)
-        .then(function() {
-          model[primaryKey] = null;
-          return model;
-        });
+            return knex
+              .delete()
+              .where(whereClause)
+              .then(function () {
+                model[primaryKey] = null;
+
+                return Promise.resolve();
+              });
+          })
+          .then(function () {
+            return runHooks(model._afterDestroy);
+          })
+          .then(function () {
+            return resolve(model);
+          })
+          .catch(reject);
+      });
+
     },
 
     _getAttributes : function() {
