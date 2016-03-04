@@ -24,6 +24,9 @@
     "name": "Sergio de la Garza <sergio@delagarza.io>",
     "web": "https://github.com/sgarza"
   },
+  "contributors": [
+    "Eduardo Lavaque <me@greduan.com> (http://greduan.com)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sgarza/krypton/issues"
@@ -31,7 +34,7 @@
   "homepage": "https://github.com/sgarza/krypton#readme",
   "dependencies": {
     "async": "^1.5.0",
-    "bluebird": "^3.0.5",
+    "bluebird": "^3.3.3",
     "checkit": "^0.6.0",
     "lodash": "^4.3.0",
     "mysql": "^2.10.0",

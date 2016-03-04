@@ -1,5 +1,6 @@
 var Checkit = require('checkit');
-var async = require('async');
+
+var runHooks = require('./utils/run-hooks.js');
 
 Module(Krypton, 'ValidationSupport')({
   prototype : {
@@ -8,20 +9,16 @@ Module(Krypton, 'ValidationSupport')({
 
       var checkit = new Checkit(this.constructor.validations);
 
-      // beforeValidation hooks
-      var beforeValidation = Promise.defer();
-
-      async.eachSeries(model._beforeValidation || [], function(handler, callback) {
-        handler(callback)
-      }, function(err) {
-        if (err) {
-          throw new Error(err);
-        }
-
-        beforeValidation.resolve(checkit.run(model))
-      });
-
-      return beforeValidation.promise;
+      return runHooks(model._beforeValidation)
+        .then(function () {
+          return checkit.run(model);
+        })
+        .then(function () {
+          return runHooks(model._afterValidation);
+        })
+        .catch(function (err) {
+          throw err;
+        });
     }
   }
 });
