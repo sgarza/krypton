@@ -2,7 +2,23 @@ var _ = require('lodash');
 var Promise = require('bluebird');
 var async = require('async');
 
+var runHooks = require('./utils/run-hooks.js');
+
 Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
+
+  ALLOWED_HOOKS : [
+    'beforeValidation',
+    'afterValidation',
+    'beforeSave',
+    'beforeCreate',
+    'afterCreate',
+    'beforeUpdate',
+    'afterUpdate',
+    'afterSave',
+    'beforeDestroy',
+    'afterDestroy'
+  ],
+
   _knex : null,
 
   _relations : {},
@@ -141,17 +157,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     return this.knex().table(this.tableName);
   },
 
-  ALLOWED_HOOKS : [
-    'beforeValidation',
-    'afterValidation',
-    'beforeSave',
-    'beforeCreate',
-    'afterCreate',
-    'beforeUpdate',
-    'afterUpdate',
-    'afterSave'
-  ],
-
   prototype : {
     init : function(config) {
       Object.keys(config || {}).forEach(function (propertyName) {
@@ -168,112 +173,93 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
     save : function(knex) {
       var model = this;
+      var primaryKey = this.constructor.primaryKey;
 
       if (knex) {
         model._knex = knex;
       }
 
-      var promise = Promise.resolve();
+      var returnedData;
 
-      promise = this.isValid();
+      return this.isValid() // beforeValidation and afterValidation hooks
+        .then(function () {
+          return runHooks(model._beforeSave);
+        })
+        .then(function () {
+          return new Promise(function afterBeforeSaveAndBeforeAfterSave (resolve, reject) {
+            if (!model[primaryKey]) {
 
-      // AfterValidation
-      var afterValidation = Promise.defer();
+              Promise.resolve()
+                .then(function () {
+                  return runHooks(model._beforeCreate);
+                })
+                .then(function () {
+                  var values = model._getAttributes();
 
-      promise.then(function() {
-        async.eachSeries(model._afterValidation || [], function(handler, callback) {
-          handler(callback);
-        }, function(err) {
-          afterValidation.resolve(err);
+                  for (var i = 0; i < model.constructor.preprocessors.length; i++) {
+                    values = model.constructor.preprocessors[i](values);
+                  }
+
+                  return model._create(values);
+                })
+                .then(function (data) {
+                  returnedData = data;
+
+                  return Promise.resolve();
+                })
+                .then(function () {
+                  return runHooks(model._afterCreate);
+                })
+                .then(resolve)
+                .catch(reject);
+
+            } else {
+
+              Promise.resolve()
+                .then(function () {
+                  return runHooks(model._beforeUpdate);
+                })
+                .then(function () {
+                  var values = model._getAttributes();
+
+                  for (var i = 0; i < model.constructor.preprocessors.length; i++) {
+                    values = model.constructor.preprocessors[i](values);
+                  }
+
+                  return model._update(values);
+                })
+                .then(function (data) {
+                  returnedData = data;
+
+                  return Promise.resolve();
+                })
+                .then(function () {
+                  return runHooks(model._afterUpdate);
+                })
+                .then(resolve)
+                .catch(reject);
+
+            }
+          });
+        })
+        .then(function () {
+          return runHooks(model._afterSave);
+        })
+        .then(function () {
+          return Promise.resolve(returnedData);
+        })
+        .catch(function (err) {
+          throw err;
         });
-      })
-      .catch(function(err) {
-        model.errors = err;
-        afterValidation.resolve(err);
-        return model;
-      });
-
-      return afterValidation.promise.then(function(err) {
-
-        if (err) {
-          throw new Error(err);
-        }
-
-        // BeforeSave hooks
-        var beforeSave = Promise.defer();
-
-        async.eachSeries(model._beforeSave || [], function(handler, callback) {
-          handler(callback);
-        }, function(err) {
-          beforeSave.resolve(err);
-        });
-
-        return beforeSave.promise.then(function(err) {
-          if (err) {
-            throw new Error(err);
-          }
-
-          if (!model[model.primaryKey]) {
-            // beforeCreate hooks
-            var beforeCreate = Promise.defer();
-
-            async.eachSeries(model._beforeCreate || [], function(handler, callback) {
-              handler(callback);
-            }, function(err) {
-              beforeCreate.resolve(err);
-            });
-
-
-            return beforeCreate.promise.then(function(err) {
-              if (err) {
-                throw new Error(err);
-              }
-
-              var values = model._getAttributes();
-
-              for (var i = 0; i < model.constructor.preprocessors.length; i++) {
-                values = model.constructor.preprocessors[i](values);
-              }
-
-              return model._create(values);
-            });
-
-          } else {
-            // beforeUpdate hooks
-            var beforeUpdate = Promise.defer();
-
-            async.eachSeries(model._beforeUpdate || [], function(handler, callback) {
-              handler(callback);
-            }, function(err) {
-              beforeUpdate.resolve(err);
-            });
-
-            return beforeUpdate.promise.then(function(err) {
-              if (err) {
-                throw new Error(err);
-              }
-
-              var values = model._getAttributes();
-
-              for (var i = 0; i < model.constructor.preprocessors.length; i++) {
-                values = model.constructor.preprocessors[i](values);
-              }
-
-              return model._update(values);
-            });
-          }
-        });
-
-      }).catch(function(err) {
-        return err;
-      });
     },
 
     _create : function(values) {
       var model = this;
-
       var primaryKey = this.constructor.primaryKey;
 
+      // This may not make sense, but the reason it's here is because after a
+      // bunch of mangling, this translates to "if the table has these".  I.e.
+      // if there are values we can affect in the DB.
       if (values.hasOwnProperty('created_at')) {
         values.created_at = new Date();
       }
@@ -297,9 +283,10 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       return knex
         .insert(values)
         .returning(primaryKey)
-        .then(function(data) {
+        .then(function (data) {
           model[primaryKey] = data[0];
 
+          // Read the comment above regarding this.
           if (values.hasOwnProperty('created_at')) {
             model.createdAt = values.created_at;
           }
@@ -308,36 +295,10 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
             model.updatedAt = values.updated_at;
           }
 
-          // AfterCreate hooks
-          var afterCreate = Promise.defer();
-
-          async.eachSeries(model._afterCreate || [], function(handler, callback) {
-            handler(callback);
-          }, function(err) {
-            // throw new Error(err);
-            afterCreate.resolve(err);
-          });
-
-          return afterCreate.promise.then(function(err) {
-            if (err) {
-              throw new Error(err);
-            }
-
-            var afterSave = Promise.defer();
-
-            async.eachSeries(model._afterSave || [], function(handler, callback) {
-              handler(callback);
-            }, function(err) {
-              afterSave.resolve(err);
-            });
-
-            return afterSave.promise.then(function() {
-              return data;
-            });
-          });
-        }).catch(function(err) {
-          console.error('Query Error', err);
-          return err;
+          return Promise.resolve(data);
+        })
+        .catch(function (err) {
+          throw err;
         });
     },
 
@@ -346,6 +307,9 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
       var primaryKey = this.constructor.primaryKey;
 
+      // This may not make sense, but the reason it's here is because after a
+      // bunch of mangling, this translates to "if the table has these".  I.e.
+      // if there are values we can affect in the DB.
       if (values.hasOwnProperty('updated_at')) {
         values.updated_at = new Date();
       }
@@ -363,39 +327,15 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         .update(values)
         .returning(primaryKey)
         .then(function(data) {
+          // Read the comment above regarding this.
           if (values.hasOwnProperty('updated_at')) {
             model.updatedAt = values.updated_at;
           }
 
-          // AfterUpdate hooks
-          var afterUpdate = Promise.defer();
-
-          async.eachSeries(model._afterUpdate || [], function(handler, callback) {
-            handler(callback);
-          }, function(err) {
-            afterUpdate.resolve(err);
-          });
-
-          return afterUpdate.promise.then(function(err) {
-            if (err) {
-              throw new Error(err);
-            }
-
-            var afterSave = Promise.defer();
-
-            async.eachSeries(model._afterSave || [], function(handler, callback) {
-              handler(callback);
-            }, function(err) {
-              afterSave.resolve(err);
-            });
-
-            return afterSave.promise.then(function() {
-              return data;
-            });
-          });
-        }).catch(function(err) {
-          console.error('Query Error', err);
-          return err;
+          return Promise.resolve(data);
+        })
+        .catch(function (err) {
+          throw err;
         });
     },
 

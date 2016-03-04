@@ -88,7 +88,7 @@ module.exports = function(session) {
       });
     });
 
-    it('Should Fail the Model validations', function() {
+    it('Should Fail the Model validations', function(doneTest) {
       Model1.validations = {
         property1 : ['required']
       }
@@ -97,10 +97,16 @@ module.exports = function(session) {
         property2 : 1
       });
 
-      return model.save().then(function(result) {
-        expect(model.errors).to.exists;
-        expect(model.id).to.be.undefined;
-      });
+      return model
+        .save()
+        .then(function (result) {
+          return doneTest(new Error('Shouldn\'t get to .then, should throw'))
+        })
+        .catch(function (err) {
+          expect(err).to.exist;
+
+          return doneTest();
+        });
     });
 
 
