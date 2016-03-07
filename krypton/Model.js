@@ -22,24 +22,28 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
   _relations : {},
 
-  preprocessors : [function(data) {
-    var sanitizedData, property;
+  preprocessors : [
+    function(data) {
+      var sanitizedData;
+      var property;
 
-    sanitizedData = {};
+      sanitizedData = {};
 
-    for (property in data) {
-      if (data.hasOwnProperty(property)) {
-        sanitizedData[_.snakeCase(property)] = data[property];
+      for (property in data) {
+        if (data.hasOwnProperty(property)) {
+          sanitizedData[_.snakeCase(property)] = data[property];
+        }
       }
+
+      return sanitizedData;
     }
+  ],
 
-    return sanitizedData;
-  }],
+  processors : [
+    function(data) {
+      var sanitizedData = [];
 
-  processors : [function(data) {
-    var sanitizedData = [];
-
-    if (data instanceof Array) {
+      // NOTE: What if it isn't?  There is no else statement...
       if (data.length > 0) {
         data.forEach(function(item) {
           var sanitizedItem = {};
@@ -62,10 +66,10 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
           }
         });
       }
-    }
 
-    return sanitizedData;
-  }],
+      return sanitizedData;
+    }
+  ],
 
   tableName : null,
 
@@ -102,7 +106,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     var result = {};
 
     for (var relation in relations) {
-
       if (relations.hasOwnProperty(relation)) {
         var config = this.relations[relation];
 
@@ -185,7 +188,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
           return runHooks(model._beforeSave);
         })
         .then(function () {
-          return new Promise(function afterBeforeSaveAndBeforeAfterSave (resolve, reject) {
+          return new Promise(function (resolve, reject) {
             if (!model[primaryKey]) {
 
               Promise.resolve()
@@ -246,9 +249,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         })
         .then(function () {
           return Promise.resolve(returnedData);
-        })
-        .catch(function (err) {
-          throw err;
         });
     },
 
@@ -258,7 +258,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
       // This may not make sense, but the reason it's here is because after a
       // bunch of mangling, this translates to "if the table has these".  I.e.
-      // if there are values we can affect in the DB.
+      // if these are values we can affect in the DB.
       if (values.hasOwnProperty('created_at')) {
         values.created_at = new Date();
       }
@@ -308,7 +308,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
       // This may not make sense, but the reason it's here is because after a
       // bunch of mangling, this translates to "if the table has these".  I.e.
-      // if there are values we can affect in the DB.
+      // if this is a value we can affect in the DB.
       if (values.hasOwnProperty('updated_at')) {
         values.updated_at = new Date();
       }
