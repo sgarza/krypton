@@ -404,7 +404,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
     on :  function(hook, handlers) {
       if (this.constructor.ALLOWED_HOOKS.indexOf(hook) === -1) {
-        throw new Error('Invalid model hook');
+        throw new Error('Invalid model hook: ' + hook);
       }
 
       if (!_.isArray(handlers)) {
