@@ -20,10 +20,7 @@
     "neon",
     "neonode"
   ],
-  "author": {
-    "name": "Sergio de la Garza <sergio@delagarza.io>",
-    "web": "https://github.com/sgarza"
-  },
+  "author": "Sergio de la Garza <sergio@delagarza.io> (https://github.com/sgarza)",
   "contributors": [
     "Eduardo Lavaque <me@greduan.com> (http://greduan.com)"
   ],
@@ -38,14 +35,14 @@
     "checkit": "^0.6.0",
     "lodash": "^4.3.0",
     "mysql": "^2.10.0",
-    "neon": "^2.0.0",
-    "pg": "^4.4.3"
+    "neon": "^2.0.0"
   },
   "devDependencies": {
     "chai": "^3.3.0",
     "codeclimate-test-reporter": "^0.3.1",
     "istanbul": "^0.4.2",
     "knex": "^0.9.0",
-    "mocha": "^2.3.3"
+    "mocha": "^2.3.3",
+    "pg": "^4.4.3"
   }
 }
