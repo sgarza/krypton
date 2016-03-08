@@ -152,6 +152,8 @@ Callbacks are hooks into the life cycle of an Krypton Model instance that allow 
     - afterCreate
     - afterUpdate
     - afterSave
+    - beforeDestroy
+    - afterDestroy
 
 API:
 ```javascript

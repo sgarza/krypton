@@ -22,50 +22,48 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
   _relations : {},
 
-  preprocessors : [function(data) {
-    var sanitizedData, property;
+  preprocessors : [
+    function(data) { // snakeCase-ise (to DB)
+      var sanitizedData;
+      var property;
 
-    sanitizedData = {};
+      sanitizedData = {};
 
-    for (property in data) {
-      if (data.hasOwnProperty(property)) {
-        sanitizedData[_.snakeCase(property)] = data[property];
+      for (property in data) {
+        if (data.hasOwnProperty(property)) {
+          sanitizedData[_.snakeCase(property)] = data[property];
+        }
       }
+
+      return sanitizedData;
     }
+  ],
 
-    return sanitizedData;
-  }],
+  processors : [
+    function(data) { // camelCase-ise (from DB)
+      var sanitizedData = [];
 
-  processors : [function(data) {
-    var sanitizedData = [];
+      data.forEach(function(item) {
+        var sanitizedItem = {};
 
-    if (data instanceof Array) {
-      if (data.length > 0) {
-        data.forEach(function(item) {
-          var sanitizedItem = {};
-          if (item instanceof Object) {
-            for (var property in item) {
-              if (item.hasOwnProperty(property)) {
-                sanitizedItem[_.camelCase(property)] = item[property];
-              }
-            }
+        // Not an object so we shouldn't process it with this processor.
+        if (!_.isObject(item)) {
+          sanitizedData.push(item);
+          return;
+        }
 
-            sanitizedData.push(sanitizedItem);
-          } else {
-            for (var property in item) {
-              if (item.hasOwnProperty(property)) {
-                sanitizedItem[_.camelCase(property)] = item[property];
-              }
-            }
-
-            sanitizedData.push(sanitizedItem);
+        for (var property in item) {
+          if (item.hasOwnProperty(property)) {
+            sanitizedItem[_.camelCase(property)] = item[property];
           }
-        });
-      }
-    }
+        }
 
-    return sanitizedData;
-  }],
+        sanitizedData.push(sanitizedItem);
+      });
+
+      return sanitizedData;
+    }
+  ],
 
   tableName : null,
 
@@ -102,7 +100,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     var result = {};
 
     for (var relation in relations) {
-
       if (relations.hasOwnProperty(relation)) {
         var config = this.relations[relation];
 
@@ -185,7 +182,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
           return runHooks(model._beforeSave);
         })
         .then(function () {
-          return new Promise(function afterBeforeSaveAndBeforeAfterSave (resolve, reject) {
+          return new Promise(function (resolve, reject) {
             if (!model[primaryKey]) {
 
               Promise.resolve()
@@ -246,9 +243,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         })
         .then(function () {
           return Promise.resolve(returnedData);
-        })
-        .catch(function (err) {
-          throw err;
         });
     },
 
@@ -258,7 +252,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
       // This may not make sense, but the reason it's here is because after a
       // bunch of mangling, this translates to "if the table has these".  I.e.
-      // if there are values we can affect in the DB.
+      // if these are values we can affect in the DB.
       if (values.hasOwnProperty('created_at')) {
         values.created_at = new Date();
       }
@@ -308,7 +302,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
       // This may not make sense, but the reason it's here is because after a
       // bunch of mangling, this translates to "if the table has these".  I.e.
-      // if there are values we can affect in the DB.
+      // if this is a value we can affect in the DB.
       if (values.hasOwnProperty('updated_at')) {
         values.updated_at = new Date();
       }
@@ -381,7 +375,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
           })
           .catch(reject);
       });
-
     },
 
     _getAttributes : function() {
@@ -402,9 +395,9 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       return sanitizedData;
     },
 
-    on :  function(hook, handlers) {
+    on : function(hook, handlers) {
       if (this.constructor.ALLOWED_HOOKS.indexOf(hook) === -1) {
-        throw new Error('Invalid model hook');
+        throw new Error('Invalid model hook: ' + hook);
       }
 
       if (!_.isArray(handlers)) {

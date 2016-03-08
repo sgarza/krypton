@@ -16,7 +16,7 @@ var IntegrationTestUtils = Module('IntegrationTestUtils')({
 
     Class('DynamicModel1').inherits(Krypton.Model)({
       tableName : 'Model1',
-      attributes : ['id', 'model1Id', 'property1', 'property2']
+      attributes : ['id', 'model1Id', 'property1', 'property2', 'property3']
     });
 
     Class('DynamicModel2').inherits(Krypton.Model)({
@@ -39,7 +39,7 @@ var IntegrationTestUtils = Module('IntegrationTestUtils')({
 
     Class('Model1').inherits(Krypton.Model)({
       tableName : 'Model1',
-      attributes : ['id', 'model1Id', 'property1', 'property2']
+      attributes : ['id', 'model1Id', 'property1', 'property2', 'property3']
     });
 
     Class('Model2').inherits(Krypton.Model)({
@@ -113,7 +113,8 @@ var IntegrationTestUtils = Module('IntegrationTestUtils')({
         t.increments('id').primary();
         t.integer('model_1_id');
         t.string('property_1');
-        t.integer('property_2')
+        t.integer('property_2');
+        t.json('property_3');
       })
       .createTable('Model2', function(t) {
         t.increments('id').primary();

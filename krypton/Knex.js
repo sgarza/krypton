@@ -100,7 +100,7 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     whereNull : queryMethod('whereNull'),
 
-    whereNotNull : queryMethod('whereNull'),
+    whereNotNull : queryMethod('whereNotNull'),
 
     orWhereNull : queryMethod('orWhereNull'),
 
@@ -150,7 +150,9 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     truncate : queryMethod('truncate'),
 
-    as : queryMethod('as')
+    as : queryMethod('as'),
+
+    pluck : queryMethod('pluck')
   }
 });
 
