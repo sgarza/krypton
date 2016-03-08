@@ -46,6 +46,61 @@ module.exports = function(session) {
           });
       });
 
+      describe('pluck()', function () {
+        before(function () {
+          Model1.validations = {};
+
+          var models = [
+            new Model1({
+              property3: {
+                content_should_be_string: 'string'
+              }
+            }),
+            new Model1({
+              property3: {
+                content_should_be_string: 'string'
+              }
+            }),
+            new Model1({
+              property3: {
+                content_should_be_string: 'string'
+              }
+            })
+          ];
+
+          return Promise.all(models.map(function (m) { return m.save(); }));
+        });
+
+        it('Should handle integers properly', function () {
+          return Model1.query()
+            .whereNotNull('property_3')
+            .pluck('id')
+            .then(function (result) {
+              expect(result.length).to.equal(3);
+
+              result.forEach(function (r) {
+                expect(_.isInteger(r)).to.equal(true);
+              });
+            });
+        });
+
+        it('Should handle objects properly', function () {
+          return Model1.query()
+            .whereNotNull('property_3')
+            .pluck('property_3')
+            .then(function (result) {
+              expect(result.length).to.equal(3);
+
+              result.forEach(function (r) {
+                expect(_.isObject(r)).to.equal(true);
+                expect(r.contentShouldBeString).to.not.exist;
+                expect(r.content_should_be_string).to.exist;
+              });
+            });
+        });
+
+      });
+
     });
 
     describe('Load relations .include()', function() {

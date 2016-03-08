@@ -23,7 +23,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
   _relations : {},
 
   preprocessors : [
-    function(data) {
+    function(data) { // snakeCase-ise (to DB)
       var sanitizedData;
       var property;
 
@@ -40,32 +40,26 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
   ],
 
   processors : [
-    function(data) {
+    function(data) { // camelCase-ise (from DB)
       var sanitizedData = [];
 
-      // NOTE: What if it isn't?  There is no else statement...
-      if (data.length > 0) {
-        data.forEach(function(item) {
-          var sanitizedItem = {};
-          if (item instanceof Object) {
-            for (var property in item) {
-              if (item.hasOwnProperty(property)) {
-                sanitizedItem[_.camelCase(property)] = item[property];
-              }
-            }
+      data.forEach(function(item) {
+        var sanitizedItem = {};
 
-            sanitizedData.push(sanitizedItem);
-          } else {
-            for (var property in item) {
-              if (item.hasOwnProperty(property)) {
-                sanitizedItem[_.camelCase(property)] = item[property];
-              }
-            }
+        // Not an object so we shouldn't process it with this processor.
+        if (!_.isObject(item)) {
+          sanitizedData.push(item);
+          return;
+        }
 
-            sanitizedData.push(sanitizedItem);
+        for (var property in item) {
+          if (item.hasOwnProperty(property)) {
+            sanitizedItem[_.camelCase(property)] = item[property];
           }
-        });
-      }
+        }
+
+        sanitizedData.push(sanitizedItem);
+      });
 
       return sanitizedData;
     }
@@ -381,7 +375,6 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
           })
           .catch(reject);
       });
-
     },
 
     _getAttributes : function() {
@@ -402,7 +395,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       return sanitizedData;
     },
 
-    on :  function(hook, handlers) {
+    on : function(hook, handlers) {
       if (this.constructor.ALLOWED_HOOKS.indexOf(hook) === -1) {
         throw new Error('Invalid model hook: ' + hook);
       }

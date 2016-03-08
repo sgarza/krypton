@@ -150,7 +150,9 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     truncate : queryMethod('truncate'),
 
-    as : queryMethod('as')
+    as : queryMethod('as'),
+
+    pluck : queryMethod('pluck')
   }
 });
 

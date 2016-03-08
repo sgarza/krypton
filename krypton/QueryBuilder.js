@@ -45,10 +45,6 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
         return records
       });
 
-      // promise = promise.then(function(records) {
-      //   return builder._createRecordInstances(records);
-      // })
-
       return promise;
     },
 
@@ -59,14 +55,19 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
         return null;
       }
 
-      // Run processors
-      for (var i = 0; i < builder.ownerModel.processors.length; i++) {
-        records = builder.ownerModel.processors[i](records);
-      }
+      var methodCallNames = this._queryMethodCalls.map(function (m) {
+        return m.method;
+      });
 
-      if (records.length > 0 && _.isObject(records[0])) {
-        for (var i = 0, l = records.length; i < l; ++i) {
-          records[i] = new this.ownerModel(records[i]);
+      if (methodCallNames.indexOf('pluck') === -1) {
+        for (var i = 0; i < builder.ownerModel.processors.length; i++) {
+          records = builder.ownerModel.processors[i](records);
+        }
+
+        if (records.length > 0 && _.isObject(records[0])) {
+          for (var i = 0, l = records.length; i < l; ++i) {
+            records[i] = new this.ownerModel(records[i]);
+          }
         }
       }
 
