@@ -166,7 +166,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       // should it replace values that are 'undefined' or consider them undefined?
       undefinedString = undefinedString || false;
 
-      var filteredObject = {};
+      var filteredObj = {};
 
       Object.keys(obj).forEach(function (key) {
         // is not undefined

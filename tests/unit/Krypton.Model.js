@@ -175,4 +175,59 @@ describe('Krypton.Model Unit Tests', function() {
 
     expect(sql).to.equal('SELECT * FROM "Model" WHERE "id" = \'1\'');
   });
+
+  describe('.updateAttributes()', function () {
+
+    it('Should return model', function () {
+      Class('User').inherits(Krypton.Model)({
+        tableName: 'Users'
+      });
+
+      var user = new User({ a: 1, b: 2 });
+
+      var returnUser = user.updateAttributes({ a: 'undefined' }, false);
+
+      expect(user).to.equal(returnUser);
+    })
+
+    it('Should replace prop in object with \'undefined\'', function () {
+      Class('User').inherits(Krypton.Model)({
+        tableName: 'Users'
+      });
+
+      var user = new User({ a: 1, b: 2 });
+
+      user.updateAttributes({ a: 'undefined' }, true);
+
+      expect(user.a).to.equal('undefined');
+    });
+
+    it('Shouldn\'t replace prop in object with \'undefined\'', function () {
+      Class('User').inherits(Krypton.Model)({
+        tableName: 'Users'
+      });
+
+      var user = new User({ a: 1, b: 2 });
+
+      user.updateAttributes({ a: 'undefined' });
+      user.updateAttributes({ a: 'undefined' }, false);
+
+      expect(user.a).to.equal(1);
+    });
+
+    it('Should ignore undefined values', function () {
+      Class('User').inherits(Krypton.Model)({
+        tableName: 'Users'
+      });
+
+      var user = new User({ a: 1, b: 2 });
+
+      user.updateAttributes({ a: undefined });
+      user.updateAttributes({ a: undefined }, false);
+      user.updateAttributes({ a: undefined }, true);
+
+      expect(user.a).to.equal(1);
+    });
+
+  })
 });
