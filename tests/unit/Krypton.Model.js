@@ -150,6 +150,18 @@ describe('Krypton.Model Unit Tests', function() {
     expect(User.query()).is.an.instanceof(Krypton.QueryBuilder);
   });
 
+  it('.toSQL() should return a string', function () {
+    Class('User').inherits(Krypton.Model)({
+      tableName: 'Users'
+    });
+
+    var toSQL = User.query().toSQL();
+
+    expect(toSQL).to.be.an('object');
+    expect(toSQL.method).to.equal('select');
+    expect(toSQL.sql).to.be.a('string');
+  });
+
   it('.raw() should be a shortcut to knex().raw', function() {
     var knex = Knex({client : 'pg'});
 
