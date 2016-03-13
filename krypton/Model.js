@@ -162,8 +162,27 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       return this;
     },
 
-    updateAttributes : function(obj) {
-      _.assign(this, obj);
+    updateAttributes : function(obj, undefinedString) {
+      // should it replace values that are 'undefined' or consider them undefined?
+      undefinedString = undefinedString || false;
+
+      var filteredObject = {};
+
+      Object.keys(obj).forEach(function (key) {
+        // is not undefined
+        if (!_.isUndefined(obj[key])) {
+          // if undefined string is OK then continue
+          if (undefinedString) {
+            filteredObj[key] = obj[key];
+          // if not, make sure string is not 'undefined'
+          } else if (obj[key] !== 'undefined') {
+            filteredObj[key] = obj[key];
+          }
+        }
+      });
+
+      _.assign(this, filteredObj);
+
       return this;
     },
 
