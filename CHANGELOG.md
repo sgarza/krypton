@@ -1,3 +1,12 @@
+## 2016-02-22, Version 0.0.12
+- Add {after, before} destroy hooks
+- Improve Invalid Hook Error Message
+- Fix typos
+- Add support for knex .pluck()
+- Refactot hooks to ditch Promise.defer
+- Refactor Error Handling
+- HasOne Relation now returns null in there are no results
+
 ## 2016-02-22, Version 0.0.11
 - Add .toSQL() support and optimize HasManyThrough relation
 - Add Istanbul to package.json dev dependencies, This is so you can run `npm run test` without having to have had installed instanbul globally.
