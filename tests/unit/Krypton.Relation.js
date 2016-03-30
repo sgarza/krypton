@@ -70,6 +70,21 @@ describe('Krypton.Relation', function() {
     expect(relation).to.throw(Error);
   });
 
+  it('Should not fail if ownerModel is (eventually) a subclass of Krypton.Model', function() {
+    var ParentClass = Class('ParentClass').inherits(Krypton.Model)({});
+
+    var relation = function() {
+      return new Krypton.Relation({
+        ownerModel : Class('Model').inherits(ParentClass)({}),
+        relatedModel : RelatedModel,
+        ownerCol : 'related_col_id',
+        relatedCol : 'id'
+      });
+    }
+
+    expect(relation).to.not.throw(Error);
+  });
+
   it('Should fail if relatedModel is missing', function() {
     var relation = function() {
       return new Krypton.Relation({
@@ -80,6 +95,21 @@ describe('Krypton.Relation', function() {
     }
 
     expect(relation).to.throw(Error);
+  });
+
+  it('Should not fail if relatedModel is (eventually) a subclass of Krypton.Model', function() {
+    var ParentClass = Class('ParentClass').inherits(Krypton.Model)({});
+
+    var relation = function() {
+      return new Krypton.Relation({
+        ownerModel : OwnerModel,
+        relatedModel : Class('Model').inherits(ParentClass)({}),
+        ownerCol : 'related_col_id',
+        relatedCol : 'id'
+      });
+    }
+
+    expect(relation).to.not.throw(Error);
   });
 
   it('Should fail if relatedModel is not a subclass of Krypton.Model', function() {
