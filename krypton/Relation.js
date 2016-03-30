@@ -8,13 +8,6 @@ Krypton.Relation = Class(Krypton, 'Relation')({
     ownerCol : null,
     relatedCol : null,
     scope : null,
-    /*
-    through : {
-      tableName : null,
-      ownerCol : null,
-      relatedCol : null,
-      scope : null
-    } */
     through : null,
 
     init : function(config) {
@@ -22,16 +15,8 @@ Krypton.Relation = Class(Krypton, 'Relation')({
         throw new Error('Must provide an ownerModel');
       }
 
-      if (config.ownerModel.superClass.className !== Krypton.Model.className) {
-        throw new Error('ownerModel is not a subclass of Krypton.Model');
-      }
-
       if (!config.relatedModel) {
         throw new Error('Must provide a relatedModel');
-      }
-
-      if (config.relatedModel.superClass.className !== Krypton.Model.className) {
-        throw new Error('relatedModel is not a subclass of Krypton.Model');
       }
 
       if (!config.ownerCol || !_.isString(config.ownerCol)) {
