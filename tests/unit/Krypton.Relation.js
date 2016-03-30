@@ -57,10 +57,36 @@ describe('Krypton.Relation', function() {
     expect(relation).to.throw(Error);
   });
 
+  it('Should fail if ownerModel is not a subclass of Krypton.Model', function() {
+    var relation = function() {
+      return new Krypton.Relation({
+        ownerModel : Class('Model')({}),
+        relatedModel : RelatedModel,
+        ownerCol : 'related_col_id',
+        relatedCol : 'id'
+      });
+    }
+
+    expect(relation).to.throw(Error);
+  });
+
   it('Should fail if relatedModel is missing', function() {
     var relation = function() {
       return new Krypton.Relation({
         ownerModel : OwnerModel,
+        ownerCol : 'related_col_id',
+        relatedCol : 'id'
+      });
+    }
+
+    expect(relation).to.throw(Error);
+  });
+
+  it('Should fail if relatedModel is not a subclass of Krypton.Model', function() {
+    var relation = function() {
+      return new Krypton.Relation({
+        ownerModel : OwnerModel,
+        relatedModel : Class('Model')({}),
         ownerCol : 'related_col_id',
         relatedCol : 'id'
       });
