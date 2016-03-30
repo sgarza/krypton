@@ -4,7 +4,7 @@
   "description": "Krypton is a full featured Javascript ORM for SQL Databases",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover _mocha -- --slow 10 --timeout 5000 --reporter spec --recursive tests"
+    "test": "NODE_ENV=test istanbul cover _mocha -- --slow 10 --timeout 5000 --reporter spec --recursive tests"
   },
   "repository": {
     "type": "git",
@@ -39,10 +39,10 @@
   "devDependencies": {
     "chai": "^3.3.0",
     "codeclimate-test-reporter": "^0.3.1",
-    "istanbul": "^0.4.2",
+    "istanbul": "0.4.2",
     "knex": "^0.9.0",
     "mocha": "^2.3.3",
-    "pg": "^4.4.3",
-    "mysql": "^2.10.0"
+    "mysql": "^2.10.0",
+    "pg": "^4.4.3"
   }
 }
