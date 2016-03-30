@@ -1,3 +1,6 @@
+## 2016-03-15, Version 0.0.13
+- Fixed a typo in Model.destroy()
+
 ## 2016-02-22, Version 0.0.12
 - Add {after, before} destroy hooks
 - Improve Invalid Hook Error Message

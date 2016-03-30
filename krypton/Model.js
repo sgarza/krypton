@@ -372,7 +372,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
             var knex;
 
             if (model._knex) {
-              knex = model._knex.table(this.constructor.tableName);
+              knex = model._knex.table(model.constructor.tableName);
             } else {
               knex = model.constructor.knexQuery();
             }
