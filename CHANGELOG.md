@@ -1,3 +1,7 @@
+## 2016-03-30, Version 0.0.14
+- Krypton.Relation will check models super tree for Krypton.Model
+
+
 ## 2016-03-15, Version 0.0.13
 - Fixed a typo in Model.destroy()
 
