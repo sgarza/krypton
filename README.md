@@ -3,9 +3,7 @@
 [![Test Coverage](https://codeclimate.com/github/sgarza/krypton/badges/coverage.svg)](https://codeclimate.com/github/sgarza/krypton/coverage)
 [![NPM](https://nodei.co/npm/krypton-orm.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/krypton-orm)
 
-
-W.I.P.
------
+# Krypton ORM
 
 **Krypton** is a full featured Javascript ORM for SQL Databases
 
@@ -20,7 +18,7 @@ Krypton Features:
 
 __*__ _Work in progress_
 
-### Constraints
+## Constraints
 
 - Build arround [Neon](https://github.com/azendal/neon/)
 - Use [Knex](http://knex.org) as the query builder
@@ -28,14 +26,13 @@ __*__ _Work in progress_
 - Don't handle migrations
 - Don't handle database schema creation
 
-
-### TODO
+## TODO
 
 - This README
 - Add more relation types, currently there are HasOne, HasMany and HasManyThrough.
 - Add transactions
 
-### Examples
+## Examples
 
 ```javascript
 var Knex = require('knex');
@@ -118,7 +115,7 @@ Class('User').inherits(Krypton.Model)({
 });
 ```
 
-Queries
+### Queries
 
 ```javascript
 var userQuery = User.query();
@@ -139,7 +136,7 @@ userQuery.then(function(result) {
 
 ```
 
-#### ActiveRecord Style callbacks
+### ActiveRecord Style callbacks
 
 Callbacks are hooks into the life cycle of an Krypton Model instance that allow you to trigger logic before or after an alteration of the object state.
 
@@ -156,6 +153,7 @@ Callbacks are hooks into the life cycle of an Krypton Model instance that allow 
     - afterDestroy
 
 API:
+
 ```javascript
 // @property on <public> [Function]
 // @method
@@ -197,3 +195,18 @@ var user = new User();
 
 user.on('beforeUpdate', handler(callback))
 ```
+
+## Note on Krypton Knex instance handling
+
+`Krypton.Model` defines a class method named `::knex()`, this method
+returns the Knex instance that has been assigned to the Class (with
+`::knex(knex)`) or throws an error if none is available.
+
+Internally `#create()`, `#query()`, `#update()` and `#destroy()` all
+use the provided Knex instance (in their params), the model instance's
+`._knex` or the instance returned by `::knex()`.
+
+If one of those methods receives a Knex instance they will set the
+model instance's `._knex` property, which the model stuff can make use
+of.  Before this happens the model instance's `._knex` property is
+undefined.
