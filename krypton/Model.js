@@ -162,19 +162,29 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       return this;
     },
 
-    updateAttributes : function(obj, undefinedString) {
-      // should it replace values that are 'undefined' or consider them undefined?
-      undefinedString = undefinedString || false;
+    updateAttributes : function(obj, allowUndefinedString) {
+      allowUndefinedString = allowUndefinedString || false;
+
+      // For further clarity I will now explain the allowUndefinedString param.
+      // When the front end sends the back end values it may sometimes put in
+      // an undefined value as the string 'undefined', which is by definition
+      // not undefined, because it is a string.
+      // The allowUndefinedString param allows you to control whether this
+      // method will consider strings that are 'undefined' as undefined, i.e.
+      // not update the current model with this value, or if it should consider
+      // it OK and update the value as 'undefined', even if that string holds no
+      // real value.
+      // By default it will consider 'undefined' strings as not valuable and
+      // will not replace the model's property with 'undefined', if the param
+      // passed in is truthy then it'll replace the model's property with the
+      // 'undefined' string.
 
       var filteredObj = {};
 
       Object.keys(obj).forEach(function (key) {
-        // is not undefined
         if (!_.isUndefined(obj[key])) {
-          // if undefined string is OK then continue
-          if (undefinedString) {
+          if (allowUndefinedString) {
             filteredObj[key] = obj[key];
-          // if not, make sure string is not 'undefined'
           } else if (obj[key] !== 'undefined') {
             filteredObj[key] = obj[key];
           }
