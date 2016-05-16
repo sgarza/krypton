@@ -1,3 +1,7 @@
+## 2016-05-16, Version 0.0.15
+- Add pagination helper methods [.page(page, pageSize), .range(start, end)]
+-  Add `_getInstanceOrStaticKnex()` to Krypton.Model to get the correct knex instance
+
 ## 2016-03-30, Version 0.0.14
 - Krypton.Relation will check models super tree for Krypton.Model
 
