@@ -152,7 +152,21 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     as : queryMethod('as'),
 
-    pluck : queryMethod('pluck')
+    pluck : queryMethod('pluck'),
+
+    page : function(page, pageSize) {
+      page = page - 1;
+      var start =  page * pageSize;
+      var end = (page + 1) * pageSize - 1;
+
+      return this.range(start, end);
+    },
+
+    range : function(start, end) {
+      return this
+        .limit(end - start + 1)
+        .offset(start);
+    }
   }
 });
 
