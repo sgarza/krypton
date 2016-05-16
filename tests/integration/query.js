@@ -23,7 +23,7 @@ module.exports = function(session) {
     it('Should return all rows when no knex methods are chained', function() {
       return Model1.query()
         .then(function(result) {
-          expect(result).to.have.length(3);
+          expect(result).to.have.length(5);
           expect(result[0]).is.an.instanceOf(Model1);
           expect(result[1]).is.an.instanceOf(Model1);
           expect(result[0].id).to.eql(1);
@@ -38,7 +38,7 @@ module.exports = function(session) {
           .query()
           .select('property_1')
           .then(function(result) {
-            expect(result).to.have.length(3);
+            expect(result).to.have.length(5);
             expect(result[0]).is.an.instanceOf(Model1);
             expect(result[1]).is.an.instanceOf(Model1);
 

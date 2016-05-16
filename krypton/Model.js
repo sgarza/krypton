@@ -294,13 +294,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         delete values[primaryKey];
       }
 
-      var knex;
-
-      if (this._knex) {
-        knex = this._knex.table(this.constructor.tableName);
-      } else {
-        knex = this.constructor.knexQuery();
-      }
+      var knex = this._getInstanceOrStaticKnex();
 
       return knex
         .insert(values)
@@ -336,13 +330,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         values.updated_at = new Date();
       }
 
-      var knex;
-
-      if (this._knex) {
-        knex = this._knex.table(this.constructor.tableName);
-      } else {
-        knex = this.constructor.knexQuery();
-      }
+      var knex = this._getInstanceOrStaticKnex();
 
       return knex
         .where(primaryKey, '=', values[primaryKey])
@@ -379,15 +367,9 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
             var whereClause = {};
             whereClause[primaryKey] = model[primaryKey];
 
-            var knex;
+            var knexQuery = model._getInstanceOrStaticKnex();
 
-            if (model._knex) {
-              knex = model._knex.table(model.constructor.tableName);
-            } else {
-              knex = model.constructor.knexQuery();
-            }
-
-            return knex
+            return knexQuery
               .delete()
               .where(whereClause)
               .then(function () {
@@ -442,6 +424,48 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       }.bind(this));
 
       return this;
+    },
+
+    _getInstanceOrStaticKnex : function() {
+      /*
+        instance.{save(knex) | destroy(knex)}
+
+        let staticKnex to be instance.constructor.knex()
+
+        if (staticKnex) then {
+        override staticKnex with knex from the instance methods
+        dont let instance._knex to be knex from the instance methods
+        } else {
+        let instance._knex to be knex from the instance methods
+        }
+      */
+
+      var knex;
+
+      try {
+        // Have to put this inside a try block because .knex() will trow an error
+        // if there is no knex instance attached to the class o superclass.
+        var staticKnex = this.constructor.knex();
+
+        if (staticKnex) {
+          knex = this.constructor.knexQuery();
+
+          if (this._knex) {
+            knex = this._knex.table(this.constructor.tableName);
+            this._knex = null;
+          }
+        } else {
+          knex = this._knex.table(this.constructor.tableName);
+        }
+      } catch (e) {
+        if (!this._knex) {
+          throw e;
+        }
+
+        knex = this._knex.table(this.constructor.tableName);
+      }
+
+      return knex;
     },
   }
 });

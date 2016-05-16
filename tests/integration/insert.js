@@ -32,7 +32,7 @@ module.exports = function(session) {
       });
     });
 
-    it('Should insert a new model with a custom knex instance set on save()', function() {
+    it('Should insert a new record with a custom knex instance set on save()', function() {
 
       var model1 = new DynamicModel1({
         property1 : 'Hello Dynamic 1',
@@ -45,6 +45,41 @@ module.exports = function(session) {
         expect(result).to.have.length(1);
         expect(model1.id).is.eql(result[0]);
       });
+    });
+
+    it('Should override the static knex instance but not set the custom knex instance in the Model\'s instance', function() {
+      var DynMod = Class({}, 'DynMod').inherits(DynamicModel1)({});
+
+      var staticKnex = new Knex(databaseConfig);
+
+      DynMod.knex(staticKnex);
+
+      var model = new DynMod({
+        property1 : 'Hello Dynamic 2',
+        property2 : 1
+      });
+
+      var instanceKnex = new Knex(databaseConfig);
+
+      return model.save(instanceKnex).then(function(result) {
+        expect(model.constructor.knex()).to.be.equal(staticKnex);
+        expect(model._knex).to.be.equal(null);
+      }).catch(expect.fail);
+    });
+
+    it('Should use the custom knex instance and set it in the Model\'s instance', function() {
+      var DynMod = Class({}, 'DynMod').inherits(DynamicModel1)({});
+
+      var model = new DynMod({
+        property1 : 'Hello Dynamic 2',
+        property2 : 1
+      });
+
+      var instanceKnex = new Knex(databaseConfig);
+
+      return model.save(instanceKnex).then(function(result) {
+        expect(model._knex).to.be.equal(instanceKnex);
+      }).catch(expect.fail);
     });
 
     it('Should set the created_at attribute if it exists in the Model.attributes', function() {

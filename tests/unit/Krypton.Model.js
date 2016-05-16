@@ -230,4 +230,78 @@ describe('Krypton.Model Unit Tests', function() {
     });
 
   })
+
+  describe('._getInstanceOrStaticKnex()', function() {
+
+    it('Should throw an Error if there is not a static or instance knex', function() {
+      var DynMod = Class({}, 'DynMod').inherits(DynamicModel1)({});
+
+      // Ensure Model superclass doesn't have a knex instance attached.
+      Krypton.Model._knex = null;
+
+      var model = new DynMod({
+        property1 : 'Hello Dynamic 2',
+        property2 : 1
+      });
+
+      expect(model._getInstanceOrStaticKnex.bind(model, '_getInstanceOrStaticKnex')).to.throw(Error);
+    });
+
+    it('Should use the passed knex instance in .save({knex}) || .destroy({knex})but not set it in the model instance', function() {
+      var DynMod = Class({}, 'DynMod').inherits(DynamicModel1)({
+        tableName : 'DynMod'
+      });
+
+      // Ensure Model superclass doesn't have a knex instance attached.
+      Krypton.Model._knex = null;
+
+      var staticKnex = Knex({client : 'pg'});
+
+      DynMod.knex(staticKnex);
+
+      var model = new DynMod({
+        property1 : 'Hello Dynamic 2',
+        property2 : 1
+      });
+
+      var instanceKnex = Knex({client : 'pg'});
+      // If a knex instance is passed to the methods .save() or .destroy()
+      // it will be set in the instance._knex variable, so we are simulating
+      // a call to any of those methods here:
+      model._knex = instanceKnex;
+
+      expect(model._getInstanceOrStaticKnex().client).to.be.eq(instanceKnex.client);
+      expect(model._knex).to.be.equal(null);
+    });
+
+    it('Should use the passed knex instance in save({knex}) || .destroy({save}) and set it in the model instance', function() {
+      var DynMod = Class({}, 'DynMod').inherits(DynamicModel1)({
+        tableName : 'DynMod'
+      });
+
+      // Ensure Model superclass doesn't have a knex instance attached.
+      Krypton.Model._knex = null;
+
+      var staticKnex = Knex({client : 'pg'});
+
+      var model = new DynMod({
+        property1 : 'Hello Dynamic 2',
+        property2 : 1
+      });
+
+      var instanceKnex = Knex({client : 'pg'});
+      // If a knex instance is passed to the methods .save() or .destroy()
+      // it will be set in the instance._knex variable, so we are simulating
+      // a call to any of those methods here:
+      model._knex = instanceKnex;
+
+      expect(model._getInstanceOrStaticKnex().client).to.be.eq(instanceKnex.client);
+      expect(model._knex).to.be.equal(instanceKnex);
+    })
+
+
+
+
+
+  });
 });
