@@ -1,3 +1,6 @@
+## 2016-08-02, Version 0.0.16
+- Add missing queryMethods to Krypton.Knex
+
 ## 2016-05-16, Version 0.0.15
 - Add pagination helper methods [.page(page, pageSize), .range(start, end)]
 -  Add `_getInstanceOrStaticKnex()` to Krypton.Model to get the correct knex instance
