@@ -74,6 +74,8 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     crossJoin : queryMethod('crossJoin'),
 
+    joinRaw : queryMethod('joinRaw'),
+
     where : queryMethod('where'),
 
     andWhere : queryMethod('andWhere'),
@@ -85,6 +87,8 @@ Krypton.Knex = Module(Krypton, 'Knex')({
     whereExists : queryMethod('whereExists'),
 
     orWhereExists : queryMethod('orWhereExists'),
+
+    whereNot : queryMethod('whereNot'),
 
     whereNotExists : queryMethod('whereNotExists'),
 
@@ -116,7 +120,11 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     groupBy : queryMethod('groupBy'),
 
+    groupByRaw : queryMethod('groupByRaw'),
+
     orderBy : queryMethod('orderBy'),
+
+    orderByRaw : queryMethod('orderByRaw'),
 
     union : queryMethod('union'),
 
@@ -150,9 +158,18 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     truncate : queryMethod('truncate'),
 
+    first : queryMethod('first'),
+
     as : queryMethod('as'),
 
     pluck : queryMethod('pluck'),
+
+    transacting : queryMethod('transacting'),
+
+    forUpdate : queryMethod('forUpdate'),
+
+    forShare : queryMethod('forShare'),
+
 
     page : function(page, pageSize) {
       page = page - 1;
