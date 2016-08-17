@@ -22,7 +22,11 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
   _relations : {},
 
-  preprocessors : [
+  // instances should override this arrays instead
+  preprocessors : [],
+  processors : [],
+
+  _preprocessors : [
     function(data) { // snakeCase-ise (to DB)
       var sanitizedData;
       var property;
@@ -39,7 +43,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     }
   ],
 
-  processors : [
+  _processors : [
     function(data) { // camelCase-ise (from DB)
       var sanitizedData = [];
 
@@ -262,9 +266,10 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
                 .then(function () {
                   var values = model._getAttributes();
 
-                  for (var i = 0; i < model.constructor.preprocessors.length; i++) {
-                    values = model.constructor.preprocessors[i](values);
-                  }
+                  (model.constructor._preprocessors.concat(model.constructor.preprocessors))
+                    .forEach(function (proc) {
+                      values = proc.call(model, values);
+                    });
 
                   return model._create(values);
                 })
@@ -288,9 +293,10 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
                 .then(function () {
                   var values = model._getAttributes();
 
-                  for (var i = 0; i < model.constructor.preprocessors.length; i++) {
-                    values = model.constructor.preprocessors[i](values);
-                  }
+                  (model.constructor._preprocessors.concat(model.constructor.preprocessors))
+                    .forEach(function (proc) {
+                      values = proc.call(model, values);
+                    });
 
                   return model._update(values);
                 })

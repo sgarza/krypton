@@ -60,9 +60,10 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
       });
 
       if (methodCallNames.indexOf('pluck') === -1) {
-        for (var i = 0; i < builder.ownerModel.processors.length; i++) {
-          records = builder.ownerModel.processors[i](records);
-        }
+        (builder.ownerModel._processors.concat(builder.ownerModel.processors))
+          .forEach(function (proc) {
+            records = proc(records, builder.ownerModel);
+          });
 
         if (records.length > 0 && _.isObject(records[0])) {
           for (var i = 0, l = records.length; i < l; ++i) {
