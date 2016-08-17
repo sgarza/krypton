@@ -75,6 +75,47 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
   attributes : [],
 
+  // convenience methods
+  _query: function (idOrWhere) {
+    var query = this.query();
+
+    if (typeof idOrWhere === 'object') {
+      if (Array.isArray(idOrWhere)) {
+        query.whereIn(this.primaryKey, idOrWhere);
+      } else {
+        query.where(idOrWhere);
+      }
+    }
+
+    if (typeof idOrWhere === 'string' || typeof idOrWhere === 'number') {
+      query.where(this.primaryKey, idOrWhere);
+    }
+
+    return query;
+  },
+
+  destroy : function (props) {
+    return this._query(props).then(function (results) {
+      return Promise.all(results.map(function (row) {
+        return row.destroy();
+      }));
+    });
+  },
+
+  update : function (props, data) {
+    return this._query(props).then(function (results) {
+      return Promise.all(results.map(function (row) {
+        row.updateAttributes(data);
+        return row.save();
+      }));
+    });
+  },
+
+  first : function(props) {
+    return this._query(props).then(function (results) {
+      return results[0];
+    });
+  },
 
   query : function(knex) {
     if (!this.tableName) {
