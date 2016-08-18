@@ -98,12 +98,8 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     return query;
   },
 
-  destroy : function (props) {
-    return this._query(props).then(function (results) {
-      return Promise.all(results.map(function (row) {
-        return row.destroy();
-      }));
-    });
+  delete : function (props) {
+    return this._query(props).delete();
   },
 
   update : function (props, data) {
