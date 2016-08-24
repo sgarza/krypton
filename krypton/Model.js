@@ -22,7 +22,11 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
   _relations : {},
 
-  preprocessors : [
+  // instances should override this arrays instead
+  preprocessors : [],
+  processors : [],
+
+  _preprocessors : [
     function(data) { // snakeCase-ise (to DB)
       var sanitizedData;
       var property;
@@ -39,7 +43,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     }
   ],
 
-  processors : [
+  _processors : [
     function(data) { // camelCase-ise (from DB)
       var sanitizedData = [];
 
@@ -75,6 +79,38 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
   attributes : [],
 
+  // convenience methods
+  _query: function (idOrWhere) {
+    var query = this.query();
+
+    if (typeof idOrWhere === 'object') {
+      if (Array.isArray(idOrWhere)) {
+        query.whereIn(this.primaryKey, idOrWhere);
+      } else {
+        query.where(idOrWhere);
+      }
+    }
+
+    if (typeof idOrWhere === 'string' || typeof idOrWhere === 'number') {
+      query.where(this.primaryKey, idOrWhere);
+    }
+
+    return query;
+  },
+
+  delete : function (props) {
+    return this._query(props).delete();
+  },
+
+  update : function (props, data) {
+    return this._query(props).update(data);
+  },
+
+  first : function(props) {
+    return this._query(props).then(function (results) {
+      return results[0];
+    });
+  },
 
   query : function(knex) {
     if (!this.tableName) {
@@ -221,9 +257,10 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
                 .then(function () {
                   var values = model._getAttributes();
 
-                  for (var i = 0; i < model.constructor.preprocessors.length; i++) {
-                    values = model.constructor.preprocessors[i](values);
-                  }
+                  (model.constructor._preprocessors.concat(model.constructor.preprocessors))
+                    .forEach(function (proc) {
+                      values = proc.call(model, values);
+                    });
 
                   return model._create(values);
                 })
@@ -247,9 +284,10 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
                 .then(function () {
                   var values = model._getAttributes();
 
-                  for (var i = 0; i < model.constructor.preprocessors.length; i++) {
-                    values = model.constructor.preprocessors[i](values);
-                  }
+                  (model.constructor._preprocessors.concat(model.constructor.preprocessors))
+                    .forEach(function (proc) {
+                      values = proc.call(model, values);
+                    });
 
                   return model._update(values);
                 })
