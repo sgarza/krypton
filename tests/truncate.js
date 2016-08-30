@@ -7,6 +7,6 @@ module.exports = (models) => {
   }
 
   return Promise.each(models, (model) => {
-    return model.knex().raw(`truncate table "${model.tableName}" cascade`);
+    return model.knex().raw(`truncate table "${model.tableName}" RESTART IDENTITY cascade;`);
   });
 };
