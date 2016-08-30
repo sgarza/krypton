@@ -16,24 +16,33 @@ Krypton Features:
 
 ## Constraints
 
-- Build arround [Neon](https://github.com/azendal/neon/)
+- Build with [Neon](https://github.com/azendal/neon/)
 - Use [Knex](http://knex.org) as the query builder
 - DB **column_names** must be **snake_case**
 - Don't handle migrations
 - Don't handle database schema creation
 
-## TODO
+## Installation
 
-- This README
-- Add more relation types, currently there are HasOne, HasMany and HasManyThrough.
+```sh
+$ npm install knex --save
+$ npm install krypton-orm --save
 
-## Examples
+# Then add one of the following:
+$ npm install pg
+$ npm install mysql
+$ npm install mariasql
+$ npm install sqlite3
+```
+You can bind a [knex](http://knexjs.org) instance to the Krypton Model Super Class (Yes you can have multiple knex instances binded to different Models :) )
+
+The [knex documentation](http://knexjs.org) provides a number of examples for different databases.
+
 
 ```javascript
-var Knex = require('knex');
+require('krypton-orm');
 
-// Create a knex instance
-var knex = Knex({
+const knex = require('knex')({
   client: 'postgres',
   connection: {
     database: 'database-name',
@@ -42,79 +51,58 @@ var knex = Knex({
   }
 });
 
-// Log queries
-knex.on('query', function(data) {
-  console.log(data);
-});
-
-// Bind the knex instance to the Krypton Base Model Class
-// (Yes you can have multiple knex instances binded to different Models :) )
 Krypton.Model.knex(knex);
 
-// Create some Models
-Class('Voice').inherits(Krypton.Model)({
-  tableName : 'Voices',
-
-  /*
-    attributes are used for validation (whitelist) at saving. Whenever a
-    model instance is saved it is checked against this schema.
-  */
-  attributes : ['id', 'title', 'description', 'createdAt', 'updatedAt']
-});
-
-Class('Entity').inherits(Krypton.Model)({
-  tableName : 'Entities',
-
-  attributes : ['id', ..., 'createdAt', 'updatedAt']
-})
-
-// This object defines the relations to other models.
-// I intentionaly declared this outside the Entity Class because it has a circular
-// relation ('organizations')
-Entity.relations = {
-  voices : {
-    type : 'HasMany',
-    relatedModel : Voice,
-    ownerCol : 'id',
-    relatedCol : 'owner_id'
-  },
-
-  organizations : {
-    type : 'HasManyThrough',
-    relatedModel : Entity,
-    ownerCol : 'id',
-    relatedCol : 'id',
-    scope : ['Entities.type', '=', 'organization'],
-    through : {
-        tableName : 'EntityOwner',
-        ownerCol : 'owner_id',
-        relatedCol : 'owned_id'
-        scope : null
-    }
-  }
-}
-
+// Create a Model Sub-Class
 Class('User').inherits(Krypton.Model)({
   tableName : 'Users',
 
-  attributes : ['id', ..., 'createdAt', 'updatedAt'],
-
-  relations : {
-    entity : {
-      type : 'HasOne',
-      relatedModel : Entity,
-      ownerCol : 'entity_id',
-      relatedCol : 'id'
-    }
-  }
+  /*
+    attributes are used for validation (whitelist) at saving. Whenever a
+    model instance is saved its properties are checked against this schema.
+  */
+  attributes : ['id', 'email', 'password', 'createdAt', 'updatedAt']
 });
+```
+
+This initialization should likely only ever happen once in your application. As it creates a connection pool for the current database.
+
+## Examples
+
+```javascript
+const User = Class('User').inherits(Krypton.Model)({
+  tableName: 'Users',
+  attributes: ['id', 'email', 'encryptedPassword', 'createdAt', 'updatedAt'],
+});
+
+const Account = Class('Account').inherits(Krypton.Model)({
+    tableName: 'Account',
+    attributes: ['id', 'userId', 'name', 'lastname', 'createdAt', 'updatedAt'],
+    prototype: {
+        fullname() {
+            return `${this.name} ${this.lastname}`;
+        }
+    }
+});
+
+// Relations
+
+User.relations = {
+  account : {
+    type : 'HasOne',
+    relatedModel : Account,
+    ownerCol : 'id',
+    relatedCol : 'user_id'
+  }
+}
 ```
 
 ### Queries
 
 ```javascript
-var userQuery = User.query();
+User.query();
 // => returns a QueryBuilder instance
+// You can chain any knex method here
 
 userQuery.where({id : 1});
 // or userQuery.where('id', '<', 5) or whatever knex expression you want to use.
@@ -122,11 +110,20 @@ userQuery.where({id : 1});
 
 // include(relationExpression)
 // Relation expression is a simple DSL for expressing relation trees.
-userQuery.include('entity.[voices, organizations]');
-// This means: Load the User(s) and its entity and the voices of its entity and the organizations of its entity
+// This means: Load the User(s) and its account.
+userQuery.include('account');
 
-userQuery.then(function(result) {
+userQuery.then((result) => {
   console.log(result)
+  // =>
+  // {
+  //     id: x,
+  //     email: ...,
+  //     encryptedPassword: ...,
+  //     account: {...},
+  //     createdAt: ...,
+  //     updatedAt:...,
+  // }
 });
 
 ```
@@ -160,23 +157,30 @@ API:
 Examples:
 
 ```javascript
-Model('User').inherits(Krypton.Model)({
+Class('User').inherits(Krypton.Model)({
     prototype : {
         init : function(config) {
             Krypton.Model.prototype.init.call(this, config);
 
             var model = this;
 
-            model.on('beforeValidation', function(next) {
-                bcrypt.hash(model.password, null, null, function(err, hash) {
-                    model.encryptedPassword = hash;
-                    delete model.password;
-                    next();
-                });
-            });
+            // If password is present hash password and set it as encryptedPassword
+            model.on('beforeSave', (done) => {
+                if (!model.password) {
+                    return done();
+                }
 
-            model.on('beforeValidation', function(next) {
-                model.count++
+                bcrypt.hash(model.password, bcrypt.genSaltSync(10), null, (err, hash) => {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    model.encryptedPassword = hash;
+
+                    model.password = null;
+
+                    return done();
+                });
             });
         }
     }
@@ -194,7 +198,6 @@ user.on('beforeUpdate', handler(callback))
 ### Transactions
 
 ```javascript
-// const uuid = require('uuid');
 
 const user = new User({
     email: 'user@example.com',
@@ -203,7 +206,7 @@ const user = new User({
 });
 
 const account = new Account({
-    fullname: 'Sergio',
+    fullname: 'Admin User',
 });
 
 User.transaction((trx) => {
@@ -227,17 +230,7 @@ User.transaction((trx) => {
 });
 
 ```
-## Note on Krypton Knex instance handling
 
-`Krypton.Model` defines a class method named `::knex()`, this method
-returns the Knex instance that has been assigned to the Class (with
-`::knex(knex)`) or throws an error if none is available.
+## TODO
 
-Internally `#create()`, `#query()`, `#update()` and `#destroy()` all
-use the provided Knex instance (in their params), the model instance's
-`._knex` or the instance returned by `::knex()`.
-
-If one of those methods receives a Knex instance they will set the
-model instance's `._knex` property, which the model stuff can make use
-of.  Before this happens the model instance's `._knex` property is
-undefined.
+- Documentation
