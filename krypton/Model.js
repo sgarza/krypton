@@ -1,11 +1,12 @@
-var _ = require('lodash');
-var Promise = require('bluebird');
+/* globals Krypton, Class */
+const _ = require('lodash');
+const Promise = require('bluebird');
 
-var runHooks = require('./utils/run-hooks.js');
+const runHooks = require('./utils/run-hooks.js');
 
 Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
-  ALLOWED_HOOKS : [
+  ALLOWED_HOOKS: [
     'beforeValidation',
     'afterValidation',
     'beforeSave',
@@ -15,40 +16,35 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     'afterUpdate',
     'afterSave',
     'beforeDestroy',
-    'afterDestroy'
+    'afterDestroy',
   ],
 
-  _knex : null,
+  _knex: null,
 
-  _relations : {},
+  _relations: {},
 
   // instances should override this arrays instead
-  preprocessors : [],
-  processors : [],
+  preprocessors: [],
+  processors: [],
 
-  _preprocessors : [
-    function(data) { // snakeCase-ise (to DB)
-      var sanitizedData;
-      var property;
+  _preprocessors: [
+    (data) => { // snakeCase-ise (to DB)
+      const sanitizedData = {};
 
-      sanitizedData = {};
-
-      for (property in data) {
-        if (data.hasOwnProperty(property)) {
-          sanitizedData[_.snakeCase(property)] = data[property];
-        }
-      }
+      Object.keys(data).forEach((property) => {
+        sanitizedData[_.snakeCase(property)] = data[property];
+      });
 
       return sanitizedData;
-    }
+    },
   ],
 
-  _processors : [
-    function(data) { // camelCase-ise (from DB)
-      var sanitizedData = [];
+  _processors: [
+    (data) => { // camelCase-ise (from DB)
+      const sanitizedData = [];
 
-      data.forEach(function(item) {
-        var sanitizedItem = {};
+      data.forEach((item) => {
+        const sanitizedItem = {};
 
         // Not an object so we shouldn't process it with this processor.
         if (!_.isObject(item)) {
@@ -56,32 +52,32 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
           return;
         }
 
-        for (var property in item) {
-          if (item.hasOwnProperty(property)) {
-            sanitizedItem[_.camelCase(property)] = item[property];
-          }
-        }
+        Object.keys(item).forEach((property) => {
+          sanitizedItem[_.camelCase(property)] = item[property];
+        });
 
         sanitizedData.push(sanitizedItem);
       });
 
       return sanitizedData;
-    }
+    },
   ],
 
-  tableName : null,
+  tableName: null,
 
-  primaryKey : 'id',
+  primaryKey: 'id',
 
-  validations : {},
+  validations: {},
 
-  relations : {},
+  relations: {},
 
-  attributes : [],
+  attributes: [],
+
+  transacting: null,
 
   // convenience methods
-  _query: function (idOrWhere) {
-    var query = this.query();
+  _query(idOrWhere) {
+    const query = this.query();
 
     if (typeof idOrWhere === 'object') {
       if (Array.isArray(idOrWhere)) {
@@ -98,28 +94,32 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     return query;
   },
 
-  destroy : function (props) {
+  destroy(props) {
     return this._query(props).delete();
   },
 
-  update : function (props, data) {
+  update(props, data) {
     return this._query(props).update(data);
   },
 
-  first : function(props) {
-    return this._query(props).then(function (results) {
-      return results[0];
+  first(props) {
+    return this._query(props).then((results) => {
+      return results[0] || [];
     });
   },
 
-  query : function(knex) {
+  transaction() {
+    return this.knex().transaction;
+  },
+
+  query(knex) {
     if (!this.tableName) {
       throw new Error('Model doesn\'t have a table name');
     }
 
     this._loadRelations(knex);
 
-    var options = {};
+    const options = {};
 
     options.ownerModel = this;
 
@@ -130,58 +130,56 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     return new Krypton.QueryBuilder(options);
   },
 
-  _loadRelations : function(knex) {
-    var relations = this.relations;
+  _loadRelations(knex) {
+    const relations = this.relations;
 
-    var result = {};
+    const result = {};
 
-    for (var relation in relations) {
-      if (relations.hasOwnProperty(relation)) {
-        var config = this.relations[relation];
+    Object.keys(relations).forEach((relation) => {
+      const config = this.relations[relation];
 
-        config.name = relation;
-        config.ownerModel = this;
+      config.name = relation;
+      config.ownerModel = this;
 
-        if (knex) {
-          config.knex = knex;
-        }
-
-        var relationInstance = new Krypton.Relation[config.type](config);
-
-        result[relation] = relationInstance;
+      if (knex) {
+        config.knex = knex;
       }
-    }
+
+      const relationInstance = new Krypton.Relation[config.type](config);
+
+      result[relation] = relationInstance;
+    });
 
     this._relations = result;
   },
 
-  knex : function(knex) {
+  knex(knex) {
     if (knex) {
       this._knex = knex;
       return knex;
-    } else {
-      var klass = this;
-
-      while (klass && !klass._knex) {
-        var proto = klass.prototype.__proto__;
-        klass = proto && proto.constructor;
-      }
-
-      if (klass && klass._knex) {
-        return klass && klass._knex;
-      } else  {
-        throw new Error('Model doesn\'t have a knex instance');
-      }
     }
+
+    let klass = this;
+
+    while (klass && !klass._knex) {
+      let proto = klass.prototype.__proto__;
+      klass = proto && proto.constructor;
+    }
+
+    if (klass && klass._knex) {
+      return klass && klass._knex;
+    }
+
+    throw new Error('Model doesn\'t have a knex instance');
   },
 
-  raw : function() {
-    var knex = this.knex();
+  raw() {
+    const knex = this.knex();
 
     return knex.raw.apply(knex, arguments);
   },
 
-  knexQuery : function() {
+  knexQuery() {
     if (!this.tableName) {
       throw new Error('Model doesn\'t have a table name');
     }
@@ -189,16 +187,21 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     return this.knex().table(this.tableName);
   },
 
-  prototype : {
-    init : function(config) {
-      Object.keys(config || {}).forEach(function (propertyName) {
+  prototype: {
+    init(config) {
+      Object.keys(config || {}).forEach((propertyName) => {
         this[propertyName] = config[propertyName];
       }, this);
 
       return this;
     },
 
-    updateAttributes : function(obj, allowUndefinedString) {
+    transacting(trx) {
+      this._trx = trx;
+      return this;
+    },
+
+    updateAttributes(obj, allowUndefinedString) {
       allowUndefinedString = allowUndefinedString || false;
 
       // For further clarity I will now explain the allowUndefinedString param.
@@ -215,9 +218,9 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       // passed in is truthy then it'll replace the model's property with the
       // 'undefined' string.
 
-      var filteredObj = {};
+      const filteredObj = {};
 
-      Object.keys(obj).forEach(function (key) {
+      Object.keys(obj).forEach((key) => {
         if (!_.isUndefined(obj[key])) {
           if (allowUndefinedString) {
             filteredObj[key] = obj[key];
@@ -232,7 +235,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       return this;
     },
 
-    save : function(knex) {
+    save(knex) {
       var model = this;
       var primaryKey = this.constructor.primaryKey;
 
@@ -337,6 +340,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       return knex
         .insert(values)
         .returning(primaryKey)
+        .transacting(this._trx)
         .then(function (data) {
           model[primaryKey] = data[0];
 
@@ -374,6 +378,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         .where(primaryKey, '=', values[primaryKey])
         .update(values)
         .returning(primaryKey)
+        .transacting(this._trx)
         .then(function(data) {
           // Read the comment above regarding this.
           if (values.hasOwnProperty('updated_at')) {
