@@ -353,6 +353,9 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
             model.updatedAt = values.updated_at;
           }
 
+          // Remove transaction
+          model._trx = null;
+
           return Promise.resolve(data);
         })
         .catch(function (err) {
@@ -384,6 +387,9 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
           if (values.hasOwnProperty('updated_at')) {
             model.updatedAt = values.updated_at;
           }
+
+          // Remove transaction
+          model._trx = null;
 
           return Promise.resolve(data);
         })
