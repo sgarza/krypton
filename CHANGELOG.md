@@ -2,6 +2,7 @@
 - Add destroy, update, first instance methods
 - Fix (pre)processors inheritance
 - Refactor test suite
+- Add Transaction Support
 - Add Attachment module
 
 ## 2016-08-02, Version 0.0.16

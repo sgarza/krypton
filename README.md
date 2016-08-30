@@ -10,13 +10,9 @@
 Krypton Features:
 
 - Declarative way of defining models
-- Mechanism to eager load relations __*__
-- Use the full feature-set of Knex.js __*__
-- Easy to use transactions __*__
+- Mechanism to eager load relations
 - Easy to declare validations
 - Promise based
-
-__*__ _Work in progress_
 
 ## Constraints
 
@@ -30,7 +26,6 @@ __*__ _Work in progress_
 
 - This README
 - Add more relation types, currently there are HasOne, HasMany and HasManyThrough.
-- Add transactions
 
 ## Examples
 
@@ -196,6 +191,42 @@ var user = new User();
 user.on('beforeUpdate', handler(callback))
 ```
 
+### Transactions
+
+```javascript
+// const uuid = require('uuid');
+
+const user = new User({
+    email: 'user@example.com',
+    password: '12345678',
+    role: 'Admin'
+});
+
+const account = new Account({
+    fullname: 'Sergio',
+});
+
+User.transaction((trx) => {
+    return user.transacting(trx).save().then(() => {
+        account.userId = user.id;
+        account.collectiveId =user.id;
+
+        return account.transacting(trx).save();
+    })
+    .then(trx.commit)
+    .catch(trx.rollback);
+})
+.then((res) => {
+    // all good
+    console.log('all good', res)
+})
+.catch((err) => {
+    // error transaction rolled-back
+    console.log('err', err)
+    console.log(err.stack)
+});
+
+```
 ## Note on Krypton Knex instance handling
 
 `Krypton.Model` defines a class method named `::knex()`, this method
