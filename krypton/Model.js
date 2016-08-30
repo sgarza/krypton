@@ -108,8 +108,8 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     });
   },
 
-  transaction() {
-    return this.knex().transaction;
+  transaction(cb) {
+    return this.knex().transaction(cb);
   },
 
   query(knex) {
