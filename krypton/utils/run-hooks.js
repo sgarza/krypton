@@ -1,27 +1,24 @@
-'use strict';
+const Promise = require('bluebird');
+const _ = require('lodash');
 
-var Promise = require('bluebird');
-var _ = require('lodash');
-
-module.exports = function (hookHandlers) {
-  return new Promise(function (resolve, reject) {
-    var hooks = hookHandlers || [];
+module.exports = (hookHandlers) => {
+  return new Promise((resolve, reject) => {
+    const hooks = hookHandlers || [];
 
     if (!_.isArray(hooks)) {
       throw new Error('hookHandlers argument is not an array');
     }
 
-    Promise.each(hooks,
-      function (handler) {
-        return new Promise(function (resolve, reject) {
-          handler(function (err) {
-            if (err) { return reject(err); }
+    Promise.each(hooks, (handler) => {
+      return new Promise((res, rej) => {
+        handler((err) => {
+          if (err) { return rej(err); }
 
-            return resolve();
-          });
+          return res();
         });
-      })
-      .then(resolve)
-      .catch(reject);
+      });
+    })
+    .then(resolve)
+    .catch(reject);
   });
 };
