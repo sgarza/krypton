@@ -35,8 +35,46 @@ describe('Model.query', () => {
         });
       });
     });
-  });
 
+    describe('Model.update()', () => {
+      it('Should update a record', () => {
+        return new Model1({
+          property1: 'first',
+        }).save().then(() => {
+          return Model1.update({
+            property_1: 'first',
+          }, {
+            property_1: 'second',
+          })
+          .then(() => {
+            return Model1.first()
+              .then((result) => {
+                expect(result).to.be.an.instanceof(Model1);
+                expect(result.property1).to.be.equal('second');
+              });
+          });
+        });
+      });
+    });
+
+    describe('Model.destroy()', () => {
+      it('Should destroy a record', () => {
+        return new Model1({
+          property1: 'first',
+        }).save().then(() => {
+          return Model1.destroy({
+            property_1: 'first',
+          })
+          .then(() => {
+            return Model1.query()
+              .then((result) => {
+                expect(result.length).to.be.equal(0);
+              });
+          });
+        });
+      });
+    });
+  });
 
   it('Should return all rows when no knex methods are chained', () => {
     return new Model1().save().then(() => {

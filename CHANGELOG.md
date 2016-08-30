@@ -1,7 +1,8 @@
-## 2016-08-02, Version 0.0.17
+## 2016-08-30, Version 0.1.0
 - Add destroy, update, first instance methods
 - Fix (pre)processors inheritance
--
+- Refactor test suite
+- Add Attachment module
 
 ## 2016-08-02, Version 0.0.16
 - Add missing queryMethods to Krypton.Knex
