@@ -7,6 +7,10 @@ const path = require('path');
 const mocha = new Mocha();
 mocha.reporter('spec');
 
+const utils = require(path.join(__dirname, 'utils'));
+
+utils.initialize();
+
 glob.sync('tests/unit/**/*.js')
   .filter((filePath) => {
     const fileName = path.parse(filePath).base;
@@ -17,15 +21,22 @@ glob.sync('tests/unit/**/*.js')
     mocha.addFile(path.join(process.cwd(), file));
   });
 
-// run Mocha
-mocha.run((failures) => {
-  process.on('exit', () => {
-    process.exit(failures);
-  });
-  process.exit();
-});
+utils.createDB()
+  .then(() => {
+    mocha.run((failures) => {
+      process.on('exit', () => {
+        process.exit(failures);
+      });
+      process.exit();
+    });
 
-process.on('error', (err) => {
-  logger.error(err, err.stack);
-  process.exit(1);
-});
+
+    process.on('error', (err) => {
+      console.error(err, err.stack);
+      process.exit(1);
+    });
+  })
+  .catch((err) => {
+    console.error(err, err.stack);
+    process.exit(1);
+  });

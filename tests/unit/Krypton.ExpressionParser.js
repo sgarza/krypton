@@ -1,26 +1,24 @@
-var expect = require('chai').expect;
+/* global Krypton, Class, */
 
-var _ = require('lodash');
+const expect = require('chai').expect;
 
-require('./../../');
-
-describe('Krypton.ExpressionParser', function() {
-  function testParse(str, parsed) {
-    var expr = new Krypton.ExpressionParser(str);
-    var res = JSON.parse(JSON.stringify(expr.parse()));
+describe('Krypton.ExpressionParser', () => {
+  const testParse = function testParse(str, parsed) {
+    const expr = new Krypton.ExpressionParser(str);
+    const res = JSON.parse(JSON.stringify(expr.parse()));
     expect(res).is.eql(parsed);
-  }
+  };
 
-  function testParseFail(str) {
-    expect(function() { new Krypton.ExpressionParser(str).parse()}).to.throw(Error);
-  }
+  const testParseFail = function testParseFail(str) {
+    expect(() => { new Krypton.ExpressionParser(str).parse() }).to.throw(Error);
+  };
 
-  describe('Parse', function() {
-    it('Empty string', function() {
+  describe('Parse', () => {
+    it('Empty string', () => {
       testParse('', { nodes: [] });
     });
 
-    it('Non String', function() {
+    it('Non String', () => {
       testParse(null, { nodes: [] });
       testParse(false, { nodes: [] });
       testParse(true, { nodes: [] });
@@ -29,44 +27,44 @@ describe('Krypton.ExpressionParser', function() {
       testParse([], { nodes: [] });
     });
 
-    it('Single relation', function() {
+    it('Single relation', () => {
       testParse('a', {
-        nodes : [
+        nodes: [
           {
-            name : 'a',
-            children : []
-          }
-        ]
+            name: 'a',
+            children: [],
+          },
+        ],
       });
 
       testParse('[a]', {
-        nodes : [
+        nodes: [
           {
-            name : 'a',
-            children : []
-          }
-        ]
+            name: 'a',
+            children: [],
+          },
+        ],
       });
 
       testParse('[[[a]]]', {
-        nodes : [
+        nodes: [
           {
-            name : 'a',
-            children : []
-          }
-        ]
+            name: 'a',
+            children: [],
+          },
+        ],
       });
     });
 
-    it('Nested relations', function() {
+    it('Nested relations', () => {
       testParse('a.b', {
         nodes: [{
           name: 'a',
           children: [{
             name: 'b',
-            children: []
-          }]
-        }]
+            children: [],
+          }],
+        }],
       });
 
       testParse('a.b.c', {
@@ -76,80 +74,80 @@ describe('Krypton.ExpressionParser', function() {
             name: 'b',
             children: [{
               name: 'c',
-              children: []
-            }]
-          }]
-        }]
+              children: [],
+            }],
+          }],
+        }],
       });
     });
 
-    it('Multiple relations', function() {
+    it('Multiple relations', () => {
       testParse('[a, b, c]', {
         nodes: [{
           name: 'a',
-          children: []
+          children: [],
         }, {
           name: 'b',
-          children: []
+          children: [],
         }, {
           name: 'c',
-          children: []
-        }]
+          children: [],
+        }],
       });
     });
 
-    it('Multiple nested relations', function() {
+    it('Multiple nested relations', () => {
       testParse('[a.b, c.d.e, f]', {
         nodes: [{
           name: 'a',
           children: [{
             name: 'b',
-            children: []
-          }]
+            children: [],
+          }],
         }, {
           name: 'c',
           children: [{
             name: 'd',
             children: [{
               name: 'e',
-              children: []
-            }]
-          }]
+              children: [],
+            }],
+          }],
         }, {
           name: 'f',
-          children: []
-        }]
+          children: [],
+        }],
       });
     });
 
-    it('Multiple sub relations', function () {
+    it('Multiple sub relations', () => {
       testParse('[a.[b, c.[d, e.f]], g]', {
         nodes: [{
           name: 'a',
           children: [{
             name: 'b',
-            children: []
+            children: [],
           }, {
             name: 'c',
             children: [{
               name: 'd',
-              children: []
+              children: [],
             }, {
               name: 'e',
               children: [{
                 name: 'f',
-                children: []
-              }]
-            }]
-          }]
+                children: [],
+              }],
+            }],
+          }],
         }, {
           name: 'g',
-          children: []
-        }]
+          children: [],
+        }],
       });
     });
 
-    it('Should fail gracefully on invalid input', function () {
+    it('Should fail gracefully on invalid input', () => {
       testParseFail('.');
       testParseFail('..');
       testParseFail('a.');
@@ -168,5 +166,4 @@ describe('Krypton.ExpressionParser', function() {
       testParseFail('[a,b,]');
     });
   });
-
 });
