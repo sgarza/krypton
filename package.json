@@ -1,10 +1,15 @@
 {
   "name": "krypton-orm",
-  "version": "0.0.16",
+  "version": "0.1.0",
   "description": "Krypton is a full featured Javascript ORM for SQL Databases",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test istanbul cover _mocha -- --slow 10 --timeout 5000 --reporter spec --recursive tests"
+    "test": "scripty",
+    "test:unit": "scripty",
+    "test:integration": "scripty",
+    "utils:resetdb": "scripty",
+    "utils:knexreset": "scripty",
+    "report": "scripty"
   },
   "repository": {
     "type": "git",
@@ -33,13 +38,20 @@
     "async": "^1.5.0",
     "bluebird": "^3.3.3",
     "checkit": "^0.6.0",
+    "knex": "^0.9.0",
     "lodash": "^4.3.0",
-    "neon": "^2.0.0"
+    "neon": "^2.0.0",
+    "scripty": "^1.6.0"
   },
   "devDependencies": {
     "chai": "^3.3.0",
     "codeclimate-test-reporter": "^0.3.1",
+    "eslint": "^3.4.0",
+    "eslint-config-airbnb-base": "^5.0.3",
+    "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-mocha": "^4.5.0",
     "istanbul": "0.4.2",
+    "istanbul-combine": "^0.3.0",
     "knex": "^0.9.0",
     "mocha": "^2.3.3",
     "mysql": "^2.10.0",

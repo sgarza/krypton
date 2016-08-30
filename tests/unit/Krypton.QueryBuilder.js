@@ -29,10 +29,6 @@ describe('QueryBuilder', function() {
     Model.knex(mockKnex);
   });
 
-  xit('call() should execute the given function and pass the queryBuilder to it', function() {
-
-  });
-
   it('Should call the callback passed to .then after execution', function (done) {
     mockKnexQueryResult = [{a: 1}, {a: 2}];
     // Make sure the callback is called by not returning a promise from the test.
@@ -51,7 +47,7 @@ describe('QueryBuilder', function() {
     return promise;
   });
 
-  xit('.map() should return a promise', function () {
+  it('.map() should return a promise', function () {
     var promise = Model.query().map(_.identity);
     expect(promise).is.an.instanceof(Promise);
     return promise;
@@ -96,9 +92,5 @@ describe('QueryBuilder', function() {
       expect(result[0]).is.an.instanceOf(Model);
       expect(result[1]).is.an.instanceOf(Model);
     });
-  });
-
-  xit('Should convert an object query result into a Model instances', function() {
-
   });
 });

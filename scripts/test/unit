@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+export NODE_ENV=test
+
+npm run utils:resetdb
+
+istanbul cover tests/unit.js --dir coverage/unit/  -- "$1"

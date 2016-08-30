@@ -1,356 +1,346 @@
-var expect = require('chai').expect;
-var _ = require('lodash');
-var os = require('os');
-var path = require('path');
-var Promise = require('bluebird');
-var Utils = require('./Utils');
-var Checkit = require('checkit');
-var Knex = require('knex');
+/* globals Model1, Model2, DynamicModel1, Class */
+/* eslint no-unused-expressions: 0 */
 
-var databaseConfig = {
-  client : 'postgres',
+const expect = require('chai').expect;
+const Knex = require('knex');
+const path = require('path');
+
+const truncate = require(path.join(__dirname, '..', 'truncate'));
+
+const databaseConfig = {
+  client: 'postgres',
   connection: {
-    host : '127.0.0.1',
-    database : 'krypton_test'
-  }
+    host: '127.0.0.1',
+    database: 'krypton_test',
+  },
 };
 
-require('./../../');
-
-module.exports = function(session) {
-  describe('Model Create', function() {
-
-    it('Should insert a new model', function() {
-      var model = new Model1({
-        property1 : 'Hello 1',
-        property2 : 1
-      });
-
-      return model.save().then(function(result) {
-        expect(result).to.have.length(1);
-        expect(model.id).is.eql(result[0]);
-      });
-    });
-
-    it('Should insert a new record with a custom knex instance set on save()', function() {
-
-      var model1 = new DynamicModel1({
-        property1 : 'Hello Dynamic 1',
-        property2 : 1
-      });
-
-      var knex = new Knex(databaseConfig);
-
-      return model1.save(knex).then(function(result) {
-        expect(result).to.have.length(1);
-        expect(model1.id).is.eql(result[0]);
-      });
-    });
-
-    it('Should override the static knex instance but not set the custom knex instance in the Model\'s instance', function() {
-      var DynMod = Class({}, 'DynMod').inherits(DynamicModel1)({});
-
-      var staticKnex = new Knex(databaseConfig);
-
-      DynMod.knex(staticKnex);
-
-      var model = new DynMod({
-        property1 : 'Hello Dynamic 2',
-        property2 : 1
-      });
-
-      var instanceKnex = new Knex(databaseConfig);
-
-      return model.save(instanceKnex).then(function(result) {
-        expect(model.constructor.knex()).to.be.equal(staticKnex);
-        expect(model._knex).to.be.equal(null);
-      }).catch(expect.fail);
-    });
-
-    it('Should use the custom knex instance and set it in the Model\'s instance', function() {
-      var DynMod = Class({}, 'DynMod').inherits(DynamicModel1)({});
-
-      var model = new DynMod({
-        property1 : 'Hello Dynamic 2',
-        property2 : 1
-      });
-
-      var instanceKnex = new Knex(databaseConfig);
-
-      return model.save(instanceKnex).then(function(result) {
-        expect(model._knex).to.be.equal(instanceKnex);
-      }).catch(expect.fail);
-    });
-
-    it('Should set the created_at attribute if it exists in the Model.attributes', function() {
-      var model = new Model2({
-        property1 : 'Hello 2',
-        property2 : 2
-      });
-
-      return model.save().then(function(result) {
-        expect(result).to.have.length(1);
-        expect(model.id).is.eql(result[0]);
-        expect(model.createdAt).is.an.instanceOf(Date);
-      });
-    });
-
-    it('Should set the updated_at attribute if it exists in the Model.attributes', function() {
-      var model = new Model2({
-        property1 : 'Hello 2',
-        property2 : 2
-      });
-
-      return model.save().then(function(result) {
-        expect(result).to.have.length(1);
-        expect(model.id).is.eql(result[0]);
-        expect(model.updatedAt).is.an.instanceOf(Date);
-      });
-    });
-
-    it('Should Pass the Model validations', function() {
-      Model1.validations = {
-        property1 : ['required']
-      }
-
-      var model = new Model1({
-        property1 : 'Hello 1'
-      });
-
-      return model.save().then(function(result) {
-        expect(result).to.have.length(1);
-        expect(model.id).is.eql(result[0]);
-      });
-    });
-
-    it('Should Fail the Model validations', function(doneTest) {
-      Model1.validations = {
-        property1 : ['required']
-      }
-
-      var model = new Model1({
-        property2 : 1
-      });
-
-      return model
-        .save()
-        .then(function (result) {
-          return doneTest(new Error('Shouldn\'t get to .then, should throw'))
-        })
-        .catch(function (err) {
-          expect(err).to.exist;
-
-          return doneTest();
-        });
-    });
-
-
+describe('Model Create', () => {
+  afterEach(() => {
+    return truncate([Model1, Model2]);
   });
 
-  describe('Model Save Hooks', function() {
-    it('Should execute beforeValidation hooks in order', function() {
-      Model2.validations = {};
+  it('Should insert a new model', () => {
+    const model = new Model1({
+      property1: 'Hello 1',
+      property2: 1,
+    });
 
-      var model = new Model2();
+    return model.save().then((result) => {
+      expect(result).to.have.length(1);
+      expect(model.id).is.eql(result[0]);
+    });
+  });
 
-      // beforeValidation hook
-      model.on('beforeValidation', function(next) {
-        setTimeout(function() {
-          model.property2 = 1;
-          next();
-        }, 1000);
+  it('Should insert a new record with a custom knex instance set on save()', () => {
+    const model = new DynamicModel1({
+      property1: 'Hello Dynamic 1',
+      property2: 1,
+    });
+
+    const knex = new Knex(databaseConfig);
+
+    return model.save(knex).then((result) => {
+      expect(result).to.have.length(1);
+      expect(model.id).is.eql(result[0]);
+    });
+  });
+
+  it('Should override the static knex instance but not set the custom knex instance in the Model\'s instance', () => {
+    const DynMod = Class({}, 'DynMod').inherits(DynamicModel1)({});
+
+    const staticKnex = new Knex(databaseConfig);
+
+    DynMod.knex(staticKnex);
+
+    const model = new DynMod({
+      property1: 'Hello Dynamic 2',
+      property2: 1,
+    });
+
+    const instanceKnex = new Knex(databaseConfig);
+
+    return model.save(instanceKnex).then(() => {
+      expect(model.constructor.knex()).to.be.equal(staticKnex);
+      expect(model._knex).to.be.equal(null);
+    }).catch(expect.fail);
+  });
+
+  it('Should use the custom knex instance and set it in the Model\'s instance', () => {
+    const DynMod = Class({}, 'DynMod').inherits(DynamicModel1)({});
+
+    const model = new DynMod({
+      property1: 'Hello Dynamic 2',
+      property2: 1,
+    });
+
+    const instanceKnex = new Knex(databaseConfig);
+
+    return model.save(instanceKnex).then(() => {
+      expect(model._knex).to.be.equal(instanceKnex);
+    }).catch(expect.fail);
+  });
+
+  it('Should set the created_at attribute if it exists in the Model.attributes', () => {
+    const model = new Model2({
+      property1: 'Hello 2',
+      property2: 2,
+    });
+
+    return model.save().then((result) => {
+      expect(result).to.have.length(1);
+      expect(model.id).is.eql(result[0]);
+      expect(model.createdAt).is.an.instanceOf(Date);
+    });
+  });
+
+  it('Should set the updated_at attribute if it exists in the Model.attributes', () => {
+    const model = new Model2({
+      property1: 'Hello 2',
+      property2: 2,
+    });
+
+    return model.save().then((result) => {
+      expect(result).to.have.length(1);
+      expect(model.id).is.eql(result[0]);
+      expect(model.updatedAt).is.an.instanceOf(Date);
+    });
+  });
+
+  it('Should Pass the Model validations', () => {
+    Model1.validations = {
+      property1: ['required'],
+    };
+
+    const model = new Model1({
+      property1: 'Hello 1',
+    });
+
+    return model.save().then((result) => {
+      expect(result).to.have.length(1);
+      expect(model.id).is.eql(result[0]);
+    });
+  });
+
+  it('Should Fail the Model validations', () => {
+    Model1.validations = {
+      property1: ['required'],
+    };
+
+    const model = new Model1({
+      property2: 1,
+    });
+
+    return model
+      .save()
+      .then((result) => {
+        expect.fail(result);
+      })
+      .catch((err) => {
+        expect(err).to.exist;
       });
+  });
+});
 
-      model.on('beforeValidation', function(next) {
-        model.property2++;
+describe('Model Save Hooks', () => {
+  it('Should execute beforeValidation hooks in order', () => {
+    Model2.validations = {};
+
+    const model = new Model2();
+
+    // beforeValidation hook
+    model.on('beforeValidation', (next) => {
+      setTimeout(() => {
+        model.property2 = 1;
         next();
-      });
+      }, 1000);
+    });
 
-      return model.save().then(function(result) {
-        expect(model.errors).to.be.undefined;
-        expect(model.property2).to.be.eql(2);
+    model.on('beforeValidation', (next) => {
+      model.property2++;
+      next();
+    });
+
+    return model.save().then(() => {
+      expect(model.errors).to.be.undefined;
+      expect(model.property2).to.be.eql(2);
+    });
+  });
+
+  it('Should execute afterValidation hooks in order', () => {
+    Model2.validations = {};
+
+    const model = new Model2();
+
+    // afterValidation hook
+    model.on('afterValidation', (next) => {
+      setTimeout(() => {
+        model.property2 = 1;
+        next();
+      }, 1000);
+    });
+
+    model.on('afterValidation', (next) => {
+      model.property2++;
+      next();
+    });
+
+    return model.save().then(() => {
+      expect(model.errors).to.be.undefined;
+      expect(model.property2).to.be.eql(2);
+    });
+  });
+
+  it('Should execute beforeSave hooks in order', () => {
+    Model2.validations = {};
+
+    const model = new Model2();
+
+    // beforeSave hook
+    model.on('beforeSave', (next) => {
+      setTimeout(() => {
+        model.property2 = 1;
+        next();
+      }, 1000);
+    });
+
+    model.on('beforeSave', (next) => {
+      model.property2++;
+      next();
+    });
+
+    return model.save().then(() => {
+      expect(model.errors).to.be.undefined;
+      expect(model.property2).to.be.eql(2);
+    });
+  });
+
+  it('Should execute beforeCreate hooks in order', () => {
+    Model2.validations = {};
+
+    const model = new Model2();
+
+    // beforeCreate hook
+    model.on('beforeCreate', (next) => {
+      setTimeout(() => {
+        model.property2 = 1;
+        next();
+      }, 1000);
+    });
+
+    model.on('beforeCreate', (next) => {
+      model.property2++;
+      next();
+    });
+
+    return model.save().then(() => {
+      expect(model.errors).to.be.undefined;
+      expect(model.property2).to.be.eql(2);
+    });
+  });
+
+  it('Should execute afterCreate hooks in order', () => {
+    Model2.validations = {};
+
+    const model = new Model2();
+
+    // afterCreate hook
+    model.on('afterCreate', (next) => {
+      Model2.query().then((result) => {
+        model.count = result.length;
+        next();
       });
     });
 
-    it('Should execute afterValidation hooks in order', function() {
-      Model2.validations = {};
-
-      var model = new Model2();
-
-      // afterValidation hook
-      model.on('afterValidation', function(next) {
-        setTimeout(function() {
-          model.property2 = 1;
-          next();
-        }, 1000);
-      });
-
-      model.on('afterValidation', function(next) {
-        model.property2++;
-        next();
-      });
-
-      return model.save().then(function(result) {
-        expect(model.errors).to.be.undefined;
-        expect(model.property2).to.be.eql(2);
-      });
+    model.on('afterCreate', (next) => {
+      model.count++;
+      next();
     });
 
-    it('Should execute beforeSave hooks in order', function() {
-      Model2.validations = {};
-
-      var model = new Model2();
-
-      // beforeSave hook
-      model.on('beforeSave', function(next) {
-        setTimeout(function() {
-          model.property2 = 1;
-          next();
-        }, 1000);
-      });
-
-      model.on('beforeSave', function(next) {
-        model.property2++;
-        next();
-      });
-
-      return model.save().then(function(result) {
-        expect(model.errors).to.be.undefined;
-        expect(model.property2).to.be.eql(2);
-      });
+    return model.save().then(() => {
+      expect(model.errors).to.be.undefined;
+      expect(model.count).to.be.eql(6);
     });
+  });
 
-    it('Should execute beforeCreate hooks in order', function() {
-      Model2.validations = {};
+  it('Should execute beforeUpdate hooks in order', () => {
+    Model2.validations = {};
 
-      var model = new Model2();
-
-      // beforeCreate hook
-      model.on('beforeCreate', function(next) {
-        setTimeout(function() {
-          model.property2 = 1;
-          next();
-        }, 1000);
-      });
-
-      model.on('beforeCreate', function(next) {
-        model.property2++;
-        next();
-      });
-
-      return model.save().then(function(result) {
-        expect(model.errors).to.be.undefined;
-        expect(model.property2).to.be.eql(2);
-      });
-    });
-
-    it('Should execute afterCreate hooks in order', function() {
-      Model2.validations = {};
-
-      var model = new Model2();
-
-      // afterCreate hook
-      model.on('afterCreate', function(next) {
-        Model2.query().then(function(result) {
-          // result.length => 7
-          model.count = result.length;
-          next();
-        });
-      });
-
-      model.on('afterCreate', function(next) {
-        model.count++;
-        next();
-      });
-
-      return model.save().then(function(result) {
-        expect(model.errors).to.be.undefined;
-        expect(model.count).to.be.eql(8);
-      });
-    });
-
-    it('Should execute beforeUpdate hooks in order', function(done) {
-      Model2.validations = {};
-
-      Model2.query().where({id : 1}).then(function(result) {
-        var model = result[0];
+    return new Model2({}).save().then((result) => {
+      Model2.query().where({ id: result[0] }).then((result) => {
+        const model = result[0];
 
         // beforeUpdate hook
-        model.on('beforeUpdate', function(next) {
-          setTimeout(function() {
-            model.property2 = model.property2 + 2;
+        model.on('beforeUpdate', (next) => {
+          setTimeout(() => {
+            model.property2 += 2;
             next();
           }, 200);
         });
 
-        model.on('beforeUpdate', function(next) {
+        model.on('beforeUpdate', (next) => {
           model.property2++;
           next();
         });
 
         model.property2 = 1;
 
-        model.save().then(function(result) {
-          Model2.query().where({id : result[0]}).then(function(result) {
+        return model.save().then(() => {
+          return Model2.query().where({ id: result[0] }).then(() => {
             expect(result[0].errors).to.be.undefined;
             expect(result[0].property2).to.be.eql(4);
-            done()
           });
         });
-
-
       });
-    });
-
-
-    it('Should execute afterUpdate hooks in order', function() {
-      Model2.validations = {};
-
-      var model = new Model2({
-        id : 7
-      });
-
-      model.on('afterUpdate', function(next) {
-        Model2.query().then(function(res) {
-          model.count = res.length;
-          next();
-        });
-      });
-
-      model.on('afterUpdate', function(next) {
-        model.count++;
-        next();
-      });
-
-      return model.save().then(function(res) {
-        expect(model.count).to.be.eql(8);
-      })
-
-    });
-
-    it('Should execute afterSave hooks in order', function() {
-      Model2.validations = {};
-
-      var model = new Model2({
-        id : 7
-      });
-
-      model.on('afterSave', function(next) {
-        Model2.query().then(function(res) {
-          model.count = res.length;
-          next();
-        });
-      });
-
-      model.on('afterSave', function(next) {
-        model.count++;
-        next();
-      });
-
-      return model.save().then(function(res) {
-        expect(model.count).to.be.eql(8);
-      })
-
     });
   });
-}
+
+
+  it('Should execute afterUpdate hooks in order', () => {
+    Model2.validations = {};
+
+    const model = new Model2({
+      id: 7,
+    });
+
+    model.on('afterUpdate', (next) => {
+      Model2.query().then((res) => {
+        model.count = res.length;
+        next();
+      });
+    });
+
+    model.on('afterUpdate', (next) => {
+      model.count++;
+      next();
+    });
+
+    return model.save().then(() => {
+      expect(model.count).to.be.eql(7);
+    });
+  });
+
+  it('Should execute afterSave hooks in order', () => {
+    Model2.validations = {};
+
+    const model = new Model2({
+      id: 7,
+    });
+
+    model.on('afterSave', (next) => {
+      Model2.query().then((res) => {
+        model.count = res.length;
+        next();
+      });
+    });
+
+    model.on('afterSave', (next) => {
+      model.count++;
+      next();
+    });
+
+    return model.save().then(() => {
+      expect(model.count).to.be.eql(7);
+    });
+  });
+});

@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+psql -h ${POSTGRES_HOST:-localhost} -U ${POSTGRES_USER:-$(whoami)} -c 'DROP DATABASE IF EXISTS "krypton_test"'
+
+psql -h ${POSTGRES_HOST:-localhost} -U ${POSTGRES_USER:-$(whoami)} -c 'CREATE DATABASE "krypton_test"'
