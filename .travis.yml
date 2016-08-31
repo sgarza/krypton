@@ -1,15 +1,7 @@
 # .travis.yml
 sudo: false
 
-language: cpp
-# language: cpp
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
-
+language: node_js
 node_js:
   - '6.5.0'
 
@@ -17,6 +9,7 @@ env:
   - NODE_ENV=test
 
 before_script:
+  - apt-get -qq install g++-4.8
   - psql -c 'create database krypton_test;' -U travis
   - npm install
   - npm install istanbul -g
