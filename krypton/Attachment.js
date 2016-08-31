@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const request = require('request');
-const streamify = require('streamify');
 const Promise = require('bluebird');
 
 const LOCAL_URI_REGEXP = /^\//;
