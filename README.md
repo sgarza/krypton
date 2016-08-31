@@ -234,6 +234,7 @@ User.transaction((trx) => {
 ## TODO FOR v0.1.0
 
 - [] ES6ify
+- [] Add uuid support for ids
 - [] Add Proper Documentation
 - [] Add Krypton.Attachment.Base
 - [] Add Kryton.Attachment.S3
