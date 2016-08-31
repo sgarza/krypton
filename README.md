@@ -231,6 +231,8 @@ User.transaction((trx) => {
 
 ```
 
-## TODO
+## TODO FOR v0.1.0
 
-- Documentation
+- [ ] Add Proper Documentation
+- [ ] Add Krypton.Attachment.Base
+- [ ] Add Kryton.Attachment.S3
