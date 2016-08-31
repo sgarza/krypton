@@ -233,6 +233,7 @@ User.transaction((trx) => {
 
 ## TODO FOR v0.1.0
 
-- [ ] Add Proper Documentation
-- [ ] Add Krypton.Attachment.Base
-- [ ] Add Kryton.Attachment.S3
+- [] ES6ify
+- [] Add Proper Documentation
+- [] Add Krypton.Attachment.Base
+- [] Add Kryton.Attachment.S3

@@ -1,7 +1,7 @@
 # .travis.yml
 sudo: false
 
-language: node_js
+language: cpp
 # language: cpp
 addons:
   apt:
