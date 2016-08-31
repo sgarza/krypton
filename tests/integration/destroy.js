@@ -45,11 +45,13 @@ describe('Destroy Methods', () => {
         next();
       });
 
-      return model.destroy().then((res) => {
-        expect(model.property2).to.be.eql(2);
-        expect(model.id).to.be.null;
-        expect(res.id).to.be.null;
-        expect(res).is.an.instanceOf(Model2);
+      return model.save().then(() => {
+        return model.destroy().then((res) => {
+          expect(model.property2).to.be.eql(2);
+          expect(model.id).to.be.null;
+          expect(res.id).to.be.null;
+          expect(res).is.an.instanceOf(Model2);
+        });
       });
     });
 
@@ -70,11 +72,13 @@ describe('Destroy Methods', () => {
         next();
       });
 
-      return model.destroy().then((res) => {
-        expect(model.property2).to.be.eql(2);
-        expect(model.id).to.be.null;
-        expect(res.id).to.be.null;
-        expect(res).is.an.instanceOf(Model2);
+      return model.save().then(() => {
+        return model.destroy().then((res) => {
+          expect(model.property2).to.be.eql(2);
+          expect(model.id).to.be.null;
+          expect(res.id).to.be.null;
+          expect(res).is.an.instanceOf(Model2);
+        });
       });
     });
   });
