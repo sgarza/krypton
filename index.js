@@ -12,5 +12,7 @@ require('./krypton/Knex');
 require('./krypton/QueryBuilder');
 require('./krypton/ValidationSupport');
 require('./krypton/Model');
+require('./krypton/Attachment');
+require('./krypton/AttachmentStorage/Local');
 
 module.exports = global.Krypton;
