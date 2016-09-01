@@ -13,6 +13,7 @@ require('./krypton/QueryBuilder');
 require('./krypton/ValidationSupport');
 require('./krypton/Model');
 require('./krypton/Attachment');
+require('./krypton/AttachmentStorage/Abstract');
 require('./krypton/AttachmentStorage/Local');
 
 module.exports = global.Krypton;
