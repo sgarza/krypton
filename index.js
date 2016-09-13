@@ -15,5 +15,6 @@ require('./krypton/Model');
 require('./krypton/Attachment');
 require('./krypton/AttachmentStorage/Abstract');
 require('./krypton/AttachmentStorage/Local');
+require('./krypton/AttachmentStorage/S3');
 
 module.exports = global.Krypton;

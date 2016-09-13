@@ -27,6 +27,7 @@ Krypton.Relation = Class(Krypton, 'Relation')({
     ownerCol : null,
     relatedCol : null,
     scope : null,
+    orderBy: null,
     through : null,
 
     init : function(config) {

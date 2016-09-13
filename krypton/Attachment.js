@@ -76,7 +76,7 @@ Krypton.Attachment = Module(Krypton, 'Attachment')({
       };
 
       Object.defineProperty(model, config.name, {
-        enumerable: false,
+        enumerable: true,
         get() {
           return attachmentObject;
         },
@@ -129,38 +129,36 @@ Krypton.Attachment = Module(Krypton, 'Attachment')({
         readStream = request.get(url);
       }
 
-      return new Promise((resolve, reject) => {
-        return storage.checkConstraints(readStream)
-          .then((readStream) => {
-            const streams = [];
+      return storage.checkConstraints(readStream)
+        .then((readStream) => {
+          const streams = [];
 
-            Object.keys(versions).forEach((version) => {
-              const transform = versions[version];
+          Object.keys(versions).forEach((version) => {
+            const transform = versions[version];
 
-              const processedStream = transform(readStream);
+            const processedStream = transform(readStream);
 
-              const result = {};
+            const result = {};
 
-              result[version] = processedStream;
+            result[version] = processedStream;
 
-              streams.push(storage.saveStream(result, basePath));
-            });
+            streams.push(storage.saveStream(result, basePath));
+          });
 
-            return Promise.all(streams)
+          return Promise.all(streams)
             .then((res) => {
-              const meta = {};
+              const _meta = {};
 
               res.forEach((i) => {
-                Object.assign(meta, i);
+                Object.assign(_meta, i);
               });
 
-              model[`${property}Meta`] = meta;
+              model[`${property}Meta`] = _meta;
               model[`${property}Path`] = basePath;
-              resolve();
+
+              return Promise.resolve();
             });
-          })
-          .catch(reject);
-      });
+        });
     },
   },
 });

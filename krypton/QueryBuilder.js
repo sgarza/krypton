@@ -88,6 +88,11 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
 
       records =  builder._createRecordInstances(records);
 
+      // Don't fetch relations if there are no records;
+      if (records.length === 0) {
+        return Promise.resolve([]);
+      }
+
       var promises = [];
 
       if (this._eagerExpression) {
