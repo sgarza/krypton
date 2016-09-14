@@ -15,10 +15,10 @@ addons:
     - gcc-4.8
     - g++-4.8
     - clang
+    - build-essential
+    - imagemagick
 
 before_script:
-  - sudo apt-get update
-  - sudo apt-get -qq install build-essential imagemagick
   - psql -c 'create database krypton_test;' -U travis
   - npm install
   - npm install istanbul -g
