@@ -5,17 +5,16 @@ language: node_js
 node_js:
   - '6.5.0'
 
+install:
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 addons:
   apt:
     sources:
-    # add PPAs with more up-to-date toolchains
     - ubuntu-toolchain-r-test
-    - llvm-toolchain-precise-3.6
     packages:
-    # install toolchains
-    - gcc-5
-    - g++-5
-    - clang-3.6
+    - gcc-4.8
+    - g++-4.8
+    - clang
 
 before_script:
   - apt-get -qq install build-essential imagemagick
