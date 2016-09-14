@@ -9,7 +9,7 @@ env:
   - NODE_ENV=test
 
 before_script:
-  - apt-get -qq install g++-4.8 imagemagick
+  - apt-get -qq install build-essential g++-4.8 imagemagick
   - psql -c 'create database krypton_test;' -U travis
   - npm install
   - npm install istanbul -g
