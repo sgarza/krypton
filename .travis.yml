@@ -25,7 +25,6 @@ before_script:
 
 env:
   - NODE_ENV=test
-  - CXX=g++-4.8
 
 after_script:
   - codeclimate-test-reporter < coverage/lcov.info
