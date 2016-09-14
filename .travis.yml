@@ -17,7 +17,7 @@ addons:
     - clang
 
 before_script:
-  - supo apt-get update
+  - sudo apt-get update
   - sudo apt-get -qq install build-essential imagemagick
   - psql -c 'create database krypton_test;' -U travis
   - npm install
