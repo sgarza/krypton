@@ -1,9 +1,9 @@
 /* globals Krypton, Class, Module */
 
-const fs = require('fs-extra');
-const zlib = require('zlib');
 const magic = require('stream-mmmagic');
-const metadata = require('im-metadata');
+const request = require('request');
+const imagesize = require('imagesize');
+
 const mime = require('mime');
 
 const Promise = require('bluebird');
@@ -46,36 +46,37 @@ Class(Krypton.AttachmentStorage, 'S3')
               Key: filePath,
               ContentType: _mime.type,
             })
-            .send((error, data) => {
+            .send((error, awsData) => {
               if (error) {
-                reject(error);
-              } else {
-                if (/image/.test(_mime.type)) {
-                  metadata(output, {
-                    exif: false,
-                    autoOrient: false,
-                  }, (error, data) => {
-                    if (error) {
-                      reject(error);
-                    }
+                return reject(error);
+              }
 
-                    const response = {};
-                    response[version] = data;
-                    response[version].mimeType = _mime.type;
-                    response[version].ext = ext;
-
-                    resolve(response);
-                  });
-                } else {
+              if (/image/.test(_mime.type)) {
+                imagesize(request.get(awsData.Location), (_err, info) => {
+                  if (_err) {
+                    return reject(err);
+                  }
                   const response = {};
 
                   response[version] = {
                     ext,
                     mimeType: _mime.type,
-                    // size: fs.lstatSync(filePath).size,
+                    width: info.width,
+                    height: info.height,
+                    key: awsData.Key,
                   };
-                  resolve(response);
-                }
+
+                  return resolve(response);
+                });
+              } else {
+                const response = {};
+
+                response[version] = {
+                  ext,
+                  mimeType: _mime.type,
+                  // size: fs.lstatSync(filePath).size,
+                };
+                resolve(response);
               }
             });
           });

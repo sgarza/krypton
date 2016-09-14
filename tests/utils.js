@@ -158,20 +158,20 @@ const IntegrationTestUtils = Module({}, 'IntegrationTestUtils')({
 
     AWS.config.update({
       region: 'us-east-1',
-      accessKeyId: process.env().AWS_KEY,
-      secretAccessKey: process.env().AWS_SECRET,
+      accessKeyId: process.env.AWS_KEY,
+      secretAccessKey: process.env.AWS_SECRET,
     });
 
     const bucketInstance = new AWS.S3({
       params: {
-        Bucket: process.env().AWS_BUCKET,
+        Bucket: process.env.AWS_BUCKET,
         ACL: 'public-read',
       },
     });
 
     const attachmentStorage = new Krypton.AttachmentStorage.S3({
       pathPrefix: 'krypton/',
-      bucketName: process.env().AWS_BUCKET,
+      bucketName: process.env.AWS_BUCKET,
       bucketInstance,
     });
 
