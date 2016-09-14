@@ -5,8 +5,20 @@ language: node_js
 node_js:
   - '6.5.0'
 
+addons:
+  apt:
+    sources:
+    # add PPAs with more up-to-date toolchains
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise-3.6
+    packages:
+    # install toolchains
+    - gcc-5
+    - g++-5
+    - clang-3.6
+
 before_script:
-  - apt-get -qq install build-essential g++-4.8 imagemagick
+  - apt-get -qq install build-essential imagemagick
   - psql -c 'create database krypton_test;' -U travis
   - npm install
   - npm install istanbul -g
