@@ -86,7 +86,7 @@ Krypton.QueryBuilder = Class(Krypton, 'QueryBuilder').includes(Krypton.Knex)({
     _eagerFetch : function(records) {
       var builder = this;
 
-      records =  builder._createRecordInstances(records);
+      records =  builder._createRecordInstances(records) || [];
 
       // Don't fetch relations if there are no records;
       if (records.length === 0) {
