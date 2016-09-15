@@ -1,9 +1,10 @@
-var _ = require('lodash');
+/* global Krypton, Class, Module */
+const _ = require('lodash');
 
-var loopThroughSuper = function (model) {
-  var currentModel = model;
-  var superName = Krypton.Model.className;
-  var isSubclass = false;
+const loopThroughSuper = (model) => {
+  let currentModel = model;
+  const superName = Krypton.Model.className;
+  let isSubclass = false;
 
   // While we still haven't found it to be a subclass of Krypton.Model
   // AND it has a super class.
@@ -20,17 +21,17 @@ var loopThroughSuper = function (model) {
 };
 
 Krypton.Relation = Class(Krypton, 'Relation')({
-  prototype : {
-    name : null,
-    ownerModel : null,
-    relatedModel : null,
-    ownerCol : null,
-    relatedCol : null,
-    scope : null,
+  prototype: {
+    name: null,
+    ownerModel: null,
+    relatedModel: null,
+    ownerCol: null,
+    relatedCol: null,
+    scope: null,
     orderBy: null,
-    through : null,
+    through: null,
 
-    init : function(config) {
+    init(config) {
       if (!config.ownerModel) {
         throw new Error('Must provide an ownerModel');
       }
@@ -60,22 +61,23 @@ Krypton.Relation = Class(Krypton, 'Relation')({
           throw new Error('Invalid through declaration');
         }
 
-        if (!_.isString(config.through.tableName) || !_.isString(config.through.ownerCol) || !_.isString(config.through.relatedCol)) {
+        if (!_.isString(config.through.tableName) || !_.isString(config.through.ownerCol) ||
+        !_.isString(config.through.relatedCol)) {
           throw new Error('Invalid through declaration');
         }
       }
 
-      Object.keys(config || {}).forEach(function (propertyName) {
+      Object.keys(config || {}).forEach((propertyName) => {
         this[propertyName] = config[propertyName];
-      }, this);
+      });
 
       return this;
     },
 
-    fetch : function() {
+    fetch() {
       throw Error('Not implemented');
-    }
-  }
+    },
+  },
 });
 
 module.exports = Krypton.Relation;

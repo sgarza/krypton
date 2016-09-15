@@ -1,11 +1,10 @@
 const Promise = require('bluebird');
-const _ = require('lodash');
 
 module.exports = (hookHandlers) => {
   return new Promise((resolve, reject) => {
     const hooks = hookHandlers || [];
 
-    if (!_.isArray(hooks)) {
+    if (!Array.isArray(hooks)) {
       throw new Error('hookHandlers argument is not an array');
     }
 

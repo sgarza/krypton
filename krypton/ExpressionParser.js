@@ -1,93 +1,94 @@
-var _ = require('lodash');
+/* global Class, Krypton */
+
+const _ = require('lodash');
 
 Class(Krypton, 'ExpressionNode')({
-  prototype : {
-    init : function(name) {
+  prototype: {
+    init(name) {
       this.name = name;
       this.children = [];
-    }
-  }
+    },
+  },
 });
 
 Class(Krypton, 'ExpressionParser')({
-  prototype : {
-    init : function(expression) {
+  prototype: {
+    init(expression) {
       this.expression = expression;
     },
 
-    parse : function() {
+    parse() {
       if (!_.isString(this.expression) || !this.expression) {
         return new Krypton.Expression([]);
-
-      } else {
-        return new Krypton.Expression(this._parse(this.expression));
       }
+
+      return new Krypton.Expression(this._parse(this.expression));
     },
 
-    _parse : function(expression) {
-      var parser = this;
+    _parse(expression) {
+      const parser = this;
 
-      var rootNodes = [];
+      const rootNodes = [];
 
-      var nodes = rootNodes;
+      let nodes = rootNodes;
 
-      this._forEachToken(expression, '.', function(token) {
+      this._forEachToken(expression, '.', (token) => {
         nodes = parser._parseIterator(token, nodes);
       });
 
       return rootNodes;
     },
 
-    _parseIterator : function(token, nodes) {
+    _parseIterator(token, nodes) {
       if (this._isArrayToken(token)) {
         return this._parseArrayToken(token, nodes);
-      } else {
-        return this._parseToken(token, nodes);
       }
+
+      return this._parseToken(token, nodes);
     },
 
-    _parseArrayToken : function(arrayToken, nodes) {
-      var parser = this;
+    _parseArrayToken(arrayToken, nodes) {
+      const parser = this;
 
       arrayToken = this._stripArrayChars(arrayToken);
 
-      this._forEachToken(arrayToken, ',', function(token) {
+      this._forEachToken(arrayToken, ',', (token) => {
         parser._parseArrayIterator(token, nodes);
       });
 
       return nodes;
     },
 
-    _parseArrayIterator : function(token, nodes) {
-      var rel = this._parse(token);
+    _parseArrayIterator(token, nodes) {
+      const rel = this._parse(token);
 
-      for (var i = 0, l = rel.length; i < l; ++i) {
+      for (let i = 0, l = rel.length; i < l; ++i) {
         nodes.push(rel[i]);
       }
     },
 
-    _parseToken : function(token, nodes) {
+    _parseToken(token, nodes) {
       if (token.length === 0) {
         return this._error();
       }
 
-      var node = new Krypton.ExpressionNode(token);
+      const node = new Krypton.ExpressionNode(token);
 
       nodes.push(node);
 
       return node.children;
     },
 
-    _forEachToken : function(expression, separator, callback) {
-      var bracketDepth = 0;
-      var previousMatchIndex = -1;
-      var token = null;
-      var i = 0;
+    _forEachToken(expression, separator, callback) {
+      let bracketDepth = 0;
+      let previousMatchIndex = -1;
+      let token = null;
+      let i = 0;
 
-      for (var l = expression.length; i <= l; ++i) {
+      for (let l = expression.length; i <= l; ++i) {
         // We handle the last token by faking that there is a
         // separator after the last character.
-        var c = (i === l) ? separator : expression.charAt(i);
+        const c = (i === l) ? separator : expression.charAt(i);
 
         if (c === '[') {
           bracketDepth++;
@@ -105,28 +106,27 @@ Class(Krypton, 'ExpressionParser')({
       }
     },
 
-    _isArrayToken : function(token) {
-      return token.length >= 2 && token.charAt(0) ==='[' &&
-      token.charAt(token.length - 1) === ']';
+    _isArrayToken(token) {
+      return token.length >= 2 && token.charAt(0) === '[' &&
+        token.charAt(token.length - 1) === ']';
     },
 
-    _stripArrayChars : function(token) {
+    _stripArrayChars(token) {
       return token.substring(1, token.length - 1);
     },
 
-    _error : function() {
-      throw new Error('Invalid Expression: ' + this.expression);
-    }
-  }
+    _error() {
+      throw new Error(`Invalid Expression: ${this.expression}`);
+    },
+  },
 });
 
 Class(Krypton, 'Expression')({
+  prototype: {
+    nodes: null,
 
-  prototype : {
-    nodes : null,
-
-    init : function(nodes) {
+    init(nodes) {
       this.nodes = nodes;
-    }
-  }
-})
+    },
+  },
+});

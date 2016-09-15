@@ -1,4 +1,4 @@
-/* globals Attachment, Class, Image, Krypton */
+/* globals Attachment, Class, Image, Krypton, ImageS3 */
 /* eslint no-unused-expressions: 0 */
 
 const expect = require('chai').expect;
@@ -97,7 +97,8 @@ describe('Attachments', () => {
     });
 
     describe('Local Constraints', () => {
-      it('Should pass if the fileSize provided in the file meta argument does met constraints', function handler() {
+      it(`Should pass if the fileSize provided in the file meta argument
+        does met constraints`, function handler() {
         this.timeout(5000);
 
         const attachment = new Image({});
@@ -115,7 +116,8 @@ describe('Attachments', () => {
         });
       });
 
-      it('Should fail if the fileSize provided in the file meta argument does not met constraints', function handler() {
+      it(`Should fail if the fileSize provided in the file meta argument
+        does not met constraints`, function handler() {
         this.timeout(5000);
 
         const attachment = new Image({});
@@ -136,7 +138,8 @@ describe('Attachments', () => {
         });
       });
 
-      it('Should pass if the mimeType provided in the file meta argument does met constraints', function handler() {
+      it(`Should pass if the mimeType provided in the file meta argument
+        does met constraints`, function handler() {
         this.timeout(5000);
 
         const attachment = new Image({});
@@ -154,7 +157,8 @@ describe('Attachments', () => {
         });
       });
 
-      it('Should fail if the mimeType provided in the file meta argument does not met constraints', function handler() {
+      it(`Should fail if the mimeType provided in the file meta argument
+        does not met constraints`, function handler() {
         this.timeout(5000);
 
         const attachment = new Image({});

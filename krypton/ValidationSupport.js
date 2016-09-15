@@ -1,23 +1,22 @@
-var Checkit = require('checkit');
+/* global Module, Krypton */
 
-var runHooks = require('./utils/run-hooks.js');
+const Checkit = require('checkit');
+
+const runHooks = require('./utils/run-hooks.js');
 
 Module(Krypton, 'ValidationSupport')({
-  prototype : {
-    isValid : function() {
-      var model = this;
+  prototype: {
+    isValid() {
+      const model = this;
 
-      var checkit = new Checkit(this.constructor.validations);
+      const checkit = new Checkit(this.constructor.validations);
 
       return runHooks(model._beforeValidation)
-        .then(function () {
+        .then(() => {
           return checkit.run(model);
         })
-        .then(function () {
+        .then(() => {
           return runHooks(model._afterValidation);
-        })
-        .catch(function (err) {
-          throw err;
         });
     }
   }

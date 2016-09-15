@@ -1,45 +1,45 @@
-var Promise = require('bluebird');
-var _ = require('lodash');
+/* globals Class, Krypton */
+/* eslint prefer-spread: 0, arrow-body-style: 0, prefer-rest-params: 0, new-cap: 0 */
 
-Krypton.Relation.HasManyThrough = Class(Krypton.Relation, 'HasManyThrough').inherits(Krypton.Relation)({
-  prototype : {
-    fetch : function(records) {
-      var relation = this;
 
-      var promises = _.map(records, function(record) {
-        var query = relation.relatedModel.query(relation.knex);
+const Promise = require('bluebird');
 
-        query
-          .select(relation.relatedModel.tableName + '.*')
-          .from(relation.relatedModel.tableName)
-          .leftJoin(
-            relation.through.tableName,
-            relation.relatedModel.tableName + '.' + relation.relatedCol,
-            relation.through.tableName + '.' + relation.through.relatedCol
-          )
-          .where(relation.through.tableName + '.' + relation.through.ownerCol, '=', record[relation.ownerCol]);
+Krypton.Relation.HasManyThrough = Class(Krypton.Relation,
+  'HasManyThrough').inherits(Krypton.Relation)({
+    prototype: {
+      fetch(records) {
+        const relation = this;
 
-        if (relation.scope) {
-          query.andWhere.apply(query, relation.scope);
-        }
+        return Promise.map(records, (record) => {
+          const query = relation.relatedModel.query(relation.knex);
 
-        if (relation.orderBy) {
-          query.orderBy.apply(query, relation.orderBy);
-        }
+          query
+            .select(`${relation.relatedModel.tableName}.*`)
+            .from(relation.relatedModel.tableName)
+            .leftJoin(
+              relation.through.tableName,
+              `${relation.relatedModel.tableName}.${relation.relatedCol}`,
+              `${relation.through.tableName}.${relation.through.relatedCol}`
+            )
+            .where(`${relation.through.tableName}.${relation.through.ownerCol}`,
+              '=', record[relation.ownerCol]);
 
-        return query
-          .then(function(results) {
-            record[relation.name] = results;
-          });
-      });
+          if (relation.scope) {
+            query.andWhere.apply(query, relation.scope);
+          }
 
-      return Promise.all(promises).then(function() {
-        return _.map(records, function(item) {
-          return item[relation.name];
-        })[0];
-      });
-    }
-  }
-});
+          if (relation.orderBy) {
+            query.orderBy.apply(query, relation.orderBy);
+          }
+
+          return query
+            .then((results) => {
+              record[relation.name] = results;
+              return results;
+            });
+        });
+      },
+    },
+  });
 
 module.exports = Krypton.Relation.HasManyThrough;

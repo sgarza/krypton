@@ -52,7 +52,7 @@ Class(Krypton.AttachmentStorage, 'S3')
               }
 
               if (/image/.test(_mime.type)) {
-                imagesize(request.get(awsData.Location), (_err, info) => {
+                return imagesize(request.get(awsData.Location), (_err, info) => {
                   if (_err) {
                     return reject(err);
                   }
@@ -69,16 +69,16 @@ Class(Krypton.AttachmentStorage, 'S3')
 
                   return resolve(response);
                 });
-              } else {
-                const response = {};
-
-                response[version] = {
-                  ext,
-                  mimeType: _mime.type,
-                  // size: fs.lstatSync(filePath).size,
-                };
-                resolve(response);
               }
+
+              const response = {};
+
+              response[version] = {
+                ext,
+                mimeType: _mime.type,
+              };
+
+              return resolve(response);
             });
           });
         });

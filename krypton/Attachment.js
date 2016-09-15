@@ -71,7 +71,11 @@ Krypton.Attachment = Module(Krypton, 'Attachment')({
             meta = {};
           }
 
-          return meta[version] ? true : false;
+          if (!meta[version]) {
+            return false;
+          }
+
+          return true;
         },
         versions,
         basePath: config.basePath || '{env}/{modelName}/{id}/{property}/{version}.{ext}',

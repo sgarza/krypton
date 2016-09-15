@@ -1,17 +1,18 @@
-var _ = require('lodash');
+/* globals Class, Krypton */
+/* eslint prefer-spread: 0, arrow-body-style: 0, prefer-rest-params: 0, new-cap: 0 */
+
+const _ = require('lodash');
 
 Krypton.Relation.HasMany = Class(Krypton.Relation, 'HasMany').inherits(Krypton.Relation)({
-  prototype : {
-    fetch : function(records) {
-      var relation = this;
+  prototype: {
+    fetch(records) {
+      const relation = this;
 
       records = _.flatten(records);
 
-      var recordIds = records.map(function(item) {
-        return item[_.camelCase(relation.ownerCol)];
-      });
+      const recordIds = records.map((item) => item[_.camelCase(relation.ownerCol)]);
 
-      var query = relation.relatedModel.query(this.knex);
+      const query = relation.relatedModel.query(this.knex);
 
       query.whereIn(relation.relatedCol, recordIds);
 
@@ -23,23 +24,22 @@ Krypton.Relation.HasMany = Class(Krypton.Relation, 'HasMany').inherits(Krypton.R
         query.orderBy.apply(query, relation.orderBy);
       }
 
-      return query.then(function(result) {
-        records.forEach(function(record) {
-          var asoc = result.filter(function(item) {
-            if (item[_.camelCase(relation.relatedCol)] === record[_.camelCase(relation.ownerCol)]) {
-              return true;
-            }
+      return query.then((result) => {
+        records.forEach((record) => {
+          const asoc = result.filter((item) => {
+            return (item[_.camelCase(relation.relatedCol)] ===
+             record[_.camelCase(relation.ownerCol)]);
           });
 
           record[relation.name] = asoc;
         });
 
-        return records.map(function(item) {
-          return item[relation.name]
+        return records.map((item) => {
+          return item[relation.name];
         });
       });
-    }
-  }
+    },
+  },
 });
 
 module.exports = Krypton.Relation.HasMany;

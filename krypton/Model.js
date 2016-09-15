@@ -162,7 +162,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     let klass = this;
 
     while (klass && !klass._knex) {
-      let proto = klass.prototype.__proto__;
+      const proto = klass.prototype.__proto__;
       klass = proto && proto.constructor;
     }
 
@@ -173,10 +173,10 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     throw new Error('Model doesn\'t have a knex instance');
   },
 
-  raw() {
+  raw(...args) {
     const knex = this.knex();
 
-    return knex.raw.apply(knex, arguments);
+    return knex.raw.apply(null, args);
   },
 
   knexQuery() {
@@ -236,98 +236,94 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
     },
 
     save(knex) {
-      var model = this;
-      var primaryKey = this.constructor.primaryKey;
+      const model = this;
+      const primaryKey = this.constructor.primaryKey;
 
       if (knex) {
         model._knex = knex;
       }
 
-      var returnedData;
+      let returnedData;
 
       return this.isValid() // beforeValidation and afterValidation hooks
-        .then(function () {
+        .then(() => {
           return runHooks(model._beforeSave);
         })
-        .then(function () {
-          return new Promise(function (resolve, reject) {
+        .then(() => {
+          return new Promise((resolve, reject) => {
             if (!model[primaryKey]) {
-
               Promise.resolve()
-                .then(function () {
+                .then(() => {
                   return runHooks(model._beforeCreate);
                 })
-                .then(function () {
-                  var values = model._getAttributes();
+                .then(() => {
+                  let values = model._getAttributes();
 
                   (model.constructor._preprocessors.concat(model.constructor.preprocessors))
-                    .forEach(function (proc) {
+                    .forEach((proc) => {
                       values = proc.call(model, values);
                     });
 
                   return model._create(values);
                 })
-                .then(function (data) {
+                .then((data) => {
                   returnedData = data;
 
                   return Promise.resolve();
                 })
-                .then(function () {
+                .then(() => {
                   return runHooks(model._afterCreate);
                 })
                 .then(resolve)
                 .catch(reject);
-
             } else {
-
               Promise.resolve()
-                .then(function () {
+                .then(() => {
                   return runHooks(model._beforeUpdate);
                 })
-                .then(function () {
-                  var values = model._getAttributes();
+                .then(() => {
+                  let values = model._getAttributes();
 
                   (model.constructor._preprocessors.concat(model.constructor.preprocessors))
-                    .forEach(function (proc) {
+                    .forEach((proc) => {
                       values = proc.call(model, values);
                     });
 
                   return model._update(values);
                 })
-                .then(function (data) {
+                .then((data) => {
                   returnedData = data;
 
                   return Promise.resolve();
                 })
-                .then(function () {
+                .then(() => {
                   return runHooks(model._afterUpdate);
                 })
                 .then(resolve)
                 .catch(reject);
-
             }
           });
         })
-        .then(function () {
+        .then(() => {
           return runHooks(model._afterSave);
         })
-        .then(function () {
+        .then(() => {
           return Promise.resolve(returnedData);
         });
     },
 
-    _create : function(values) {
-      var model = this;
-      var primaryKey = this.constructor.primaryKey;
+    _create(values) {
+      const model = this;
+      const primaryKey = this.constructor.primaryKey;
 
       // This may not make sense, but the reason it's here is because after a
       // bunch of mangling, this translates to "if the table has these".  I.e.
       // if these are values we can affect in the DB.
-      if (values.hasOwnProperty('created_at')) {
+      if ({}.hasOwnProperty.call(values, 'created_at')) {
         values.created_at = new Date();
       }
 
-      if (values.hasOwnProperty('updated_at')) {
+      if ({}.hasOwnProperty.call(values, 'updated_at')) {
         values.updated_at = new Date();
       }
 
@@ -335,21 +331,21 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         delete values[primaryKey];
       }
 
-      var knex = this._getInstanceOrStaticKnex();
+      const knex = this._getInstanceOrStaticKnex();
 
       return knex
         .insert(values)
         .returning(primaryKey)
         .transacting(this._trx)
-        .then(function (data) {
+        .then((data) => {
           model[primaryKey] = data[0];
 
           // Read the comment above regarding this.
-          if (values.hasOwnProperty('created_at')) {
+          if ({}.hasOwnProperty.call(values, 'created_at')) {
             model.createdAt = values.created_at;
           }
 
-          if (values.hasOwnProperty('updated_at')) {
+          if ({}.hasOwnProperty.call(values, 'updated_at')) {
             model.updatedAt = values.updated_at;
           }
 
@@ -358,33 +354,33 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
           return Promise.resolve(data);
         })
-        .catch(function (err) {
+        .catch((err) => {
           throw err;
         });
     },
 
-    _update : function(values) {
-      var model = this;
+    _update(values) {
+      const model = this;
 
-      var primaryKey = this.constructor.primaryKey;
+      const primaryKey = this.constructor.primaryKey;
 
       // This may not make sense, but the reason it's here is because after a
       // bunch of mangling, this translates to "if the table has these".  I.e.
       // if this is a value we can affect in the DB.
-      if (values.hasOwnProperty('updated_at')) {
+      if ({}.hasOwnProperty.call(values, 'updated_at')) {
         values.updated_at = new Date();
       }
 
-      var knex = this._getInstanceOrStaticKnex();
+      const knex = this._getInstanceOrStaticKnex();
 
       return knex
         .where(primaryKey, '=', values[primaryKey])
         .update(values)
         .returning(primaryKey)
         .transacting(this._trx)
-        .then(function(data) {
+        .then((data) => {
           // Read the comment above regarding this.
-          if (values.hasOwnProperty('updated_at')) {
+          if ({}.hasOwnProperty.call(values, 'updated_at')) {
             model.updatedAt = values.updated_at;
           }
 
@@ -393,58 +389,58 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
           return Promise.resolve(data);
         })
-        .catch(function (err) {
+        .catch((err) => {
           throw err;
         });
     },
 
-    destroy : function(knex) {
-      var model = this;
+    destroy(knex) {
+      const model = this;
+      const primaryKey = model.constructor.primaryKey;
 
       if (knex) {
         this._knex = knex;
       }
 
-      return new Promise(function (resolve, reject) {
+      return new Promise((resolve, reject) => {
         Promise.resolve()
-          .then(function () {
+          .then(() => {
             return runHooks(model._beforeDestroy);
           })
-          .then(function () {
-            var primaryKey = model.constructor.primaryKey;
+          .then(() => {
+            const whereClause = {};
 
-            var whereClause = {};
             whereClause[primaryKey] = model[primaryKey];
 
-            var knexQuery = model._getInstanceOrStaticKnex();
+            const knexQuery = model._getInstanceOrStaticKnex();
 
             return knexQuery
               .delete()
               .where(whereClause)
-              .then(function () {
+              .then(() => {
                 model[primaryKey] = null;
 
                 return Promise.resolve();
               });
           })
-          .then(function () {
+          .then(() => {
             return runHooks(model._afterDestroy);
           })
-          .then(function () {
+          .then(() => {
             return resolve(model);
           })
           .catch(reject);
       });
     },
 
-    _getAttributes : function() {
-      var model = this;
+    _getAttributes() {
+      const model = this;
 
-      var values = _.clone(model);
+      const values = _.clone(model);
 
-      var sanitizedData = {};
+      const sanitizedData = {};
 
-      model.constructor.attributes.forEach(function(attribute) {
+      model.constructor.attributes.forEach((attribute) => {
         if (_.isUndefined(values[attribute])) {
           sanitizedData[attribute] = null;
         } else {
@@ -455,27 +451,27 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
       return sanitizedData;
     },
 
-    on : function(hook, handlers) {
-      if (this.constructor.ALLOWED_HOOKS.indexOf(hook) === -1) {
-        throw new Error('Invalid model hook: ' + hook);
+    on(hook, handlers) {
+      if (!this.constructor.ALLOWED_HOOKS.includes(hook)) {
+        throw new Error(`Invalid model hook: ${hook}`);
       }
 
-      if (!_.isArray(handlers)) {
+      if (!Array.isArray(handlers)) {
         handlers = [handlers];
       }
 
-      if (!this['_' + hook]) {
-        this['_' + hook] = [];
+      if (!this[`_${hook}`]) {
+        this[`_${hook}`] = [];
       }
 
-      handlers.forEach(function(handler) {
-        this['_' + hook].push(handler);
-      }.bind(this));
+      handlers.forEach((handler) => {
+        this[`_${hook}`].push(handler);
+      });
 
       return this;
     },
 
-    _getInstanceOrStaticKnex : function() {
+    _getInstanceOrStaticKnex() {
       /*
         instance.{save(knex) | destroy(knex)}
 
@@ -489,12 +485,12 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
         }
       */
 
-      var knex;
+      let knex;
 
       try {
         // Have to put this inside a try block because .knex() will trow an error
         // if there is no knex instance attached to the class o superclass.
-        var staticKnex = this.constructor.knex();
+        const staticKnex = this.constructor.knex();
 
         if (staticKnex) {
           knex = this.constructor.knexQuery();
@@ -516,7 +512,7 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
 
       return knex;
     },
-  }
+  },
 });
 
 module.exports = Krypton.Model;

@@ -1,29 +1,28 @@
-var _ = require('lodash');
+/* global Krypton, Module, Class */
 
-var queryMethod = function(methodName) {
-  return function() {
+function queryMethod(method) {
+  return function queryMethodHandler() {
+    const args = new Array(arguments.length);
 
-    var args = new Array(arguments.length);
-
-    for (var i = 0, l = arguments.length; i < l; ++i) {
+    for (let i = 0; i < arguments.length; i++) {
       args[i] = arguments[i];
     }
 
     this._queryMethodCalls.push({
-      method: methodName,
-      args: args
+      args,
+      method,
     });
 
     return this;
   };
-};
+}
 
 Krypton.Knex = Module(Krypton, 'Knex')({
-  prototype : {
-    _queryMethodCalls : null,
+  prototype: {
+    _queryMethodCalls: null,
 
-    _build : function() {
-      var knexBuilder;
+    _build() {
+      let knexBuilder;
 
       if (this.knex) {
         knexBuilder = this.knex.table(this.ownerModel.tableName);
@@ -31,160 +30,161 @@ Krypton.Knex = Module(Krypton, 'Knex')({
         knexBuilder = this.ownerModel.knexQuery();
       }
 
-      _.each(this._queryMethodCalls, function (call) {
+      this._queryMethodCalls = this._queryMethodCalls || [];
+
+      this._queryMethodCalls.forEach((call) => {
         knexBuilder[call.method].apply(knexBuilder, call.args);
       });
+
 
       return knexBuilder;
     },
 
-    insert : queryMethod('insert'),
+    insert: queryMethod('insert'),
 
-    update : queryMethod('update'),
+    update: queryMethod('update'),
 
-    patch : queryMethod('patch'),
+    patch: queryMethod('patch'),
 
-    delete : queryMethod('delete'),
+    delete: queryMethod('delete'),
 
-    select : queryMethod('select'),
+    select: queryMethod('select'),
 
-    from : queryMethod('from'),
+    from: queryMethod('from'),
 
-    into : queryMethod('into'),
+    into: queryMethod('into'),
 
-    table : queryMethod('table'),
+    table: queryMethod('table'),
 
-    distinct : queryMethod('distinct'),
+    distinct: queryMethod('distinct'),
 
-    join : queryMethod('join'),
+    join: queryMethod('join'),
 
-    innerJoin : queryMethod('innerJoin'),
+    innerJoin: queryMethod('innerJoin'),
 
-    leftJoin : queryMethod('leftJoin'),
+    leftJoin: queryMethod('leftJoin'),
 
-    leftOuterJoin : queryMethod('leftOuterJoin'),
+    leftOuterJoin: queryMethod('leftOuterJoin'),
 
-    rightJoin : queryMethod('rightJoin'),
+    rightJoin: queryMethod('rightJoin'),
 
-    rightOuterJoin : queryMethod('rightOuterJoin'),
+    rightOuterJoin: queryMethod('rightOuterJoin'),
 
-    outerJoin : queryMethod('outerJoin'),
+    outerJoin: queryMethod('outerJoin'),
 
-    fullOuterJoin : queryMethod('fullOuterJoin'),
+    fullOuterJoin: queryMethod('fullOuterJoin'),
 
-    crossJoin : queryMethod('crossJoin'),
+    crossJoin: queryMethod('crossJoin'),
 
-    joinRaw : queryMethod('joinRaw'),
+    joinRaw: queryMethod('joinRaw'),
 
-    where : queryMethod('where'),
+    where: queryMethod('where'),
 
-    andWhere : queryMethod('andWhere'),
+    andWhere: queryMethod('andWhere'),
 
-    orWhere : queryMethod('orWhere'),
+    orWhere: queryMethod('orWhere'),
 
-    whereRaw : queryMethod('whereRaw'),
+    whereRaw: queryMethod('whereRaw'),
 
-    whereExists : queryMethod('whereExists'),
+    whereExists: queryMethod('whereExists'),
 
-    orWhereExists : queryMethod('orWhereExists'),
+    orWhereExists: queryMethod('orWhereExists'),
 
-    whereNot : queryMethod('whereNot'),
+    whereNot: queryMethod('whereNot'),
 
-    whereNotExists : queryMethod('whereNotExists'),
+    whereNotExists: queryMethod('whereNotExists'),
 
-    orWhereNotExists : queryMethod('orWhereNotExists'),
+    orWhereNotExists: queryMethod('orWhereNotExists'),
 
-    whereIn : queryMethod('whereIn'),
+    whereIn: queryMethod('whereIn'),
 
-    orWhereIn : queryMethod('orWhereIn'),
+    orWhereIn: queryMethod('orWhereIn'),
 
-    whereNotIn : queryMethod('whereNotIn'),
+    whereNotIn: queryMethod('whereNotIn'),
 
-    orWhereNotIn : queryMethod('orWhereNotIn'),
+    orWhereNotIn: queryMethod('orWhereNotIn'),
 
-    whereNull : queryMethod('whereNull'),
+    whereNull: queryMethod('whereNull'),
 
-    whereNotNull : queryMethod('whereNotNull'),
+    whereNotNull: queryMethod('whereNotNull'),
 
-    orWhereNull : queryMethod('orWhereNull'),
+    orWhereNull: queryMethod('orWhereNull'),
 
-    orWhereNotNull : queryMethod('orWhereNotNull'),
+    orWhereNotNull: queryMethod('orWhereNotNull'),
 
-    whereBetween : queryMethod('whereBetween'),
+    whereBetween: queryMethod('whereBetween'),
 
-    whereNotBetween : queryMethod('whereNotBetween'),
+    whereNotBetween: queryMethod('whereNotBetween'),
 
-    orWhereBetween : queryMethod('orWhereBetween'),
+    orWhereBetween: queryMethod('orWhereBetween'),
 
-    orWhereNotBetween : queryMethod('orWhereNotBetween'),
+    orWhereNotBetween: queryMethod('orWhereNotBetween'),
 
-    groupBy : queryMethod('groupBy'),
+    groupBy: queryMethod('groupBy'),
 
-    groupByRaw : queryMethod('groupByRaw'),
+    groupByRaw: queryMethod('groupByRaw'),
 
-    orderBy : queryMethod('orderBy'),
+    orderBy: queryMethod('orderBy'),
 
-    orderByRaw : queryMethod('orderByRaw'),
+    orderByRaw: queryMethod('orderByRaw'),
 
-    union : queryMethod('union'),
+    union: queryMethod('union'),
 
-    unionAll : queryMethod('unionAll'),
+    unionAll: queryMethod('unionAll'),
 
-    having : queryMethod('having'),
+    having: queryMethod('having'),
 
-    havingRaw : queryMethod('havingRaw'),
+    havingRaw: queryMethod('havingRaw'),
 
-    offset : queryMethod('offset'),
+    offset: queryMethod('offset'),
 
-    limit : queryMethod('limit'),
+    limit: queryMethod('limit'),
 
-    count : queryMethod('count'),
+    count: queryMethod('count'),
 
-    min : queryMethod('min'),
+    min: queryMethod('min'),
 
-    max : queryMethod('max'),
+    max: queryMethod('max'),
 
-    sum : queryMethod('sum'),
+    sum: queryMethod('sum'),
 
-    avg : queryMethod('avg'),
+    avg: queryMethod('avg'),
 
-    increment : queryMethod('increment'),
+    increment: queryMethod('increment'),
 
-    decrement : queryMethod('decrement'),
+    decrement: queryMethod('decrement'),
 
-    debug : queryMethod('debug'),
+    debug: queryMethod('debug'),
 
-    returning : queryMethod('returning'),
+    returning: queryMethod('returning'),
 
-    truncate : queryMethod('truncate'),
+    truncate: queryMethod('truncate'),
 
-    first : queryMethod('first'),
+    first: queryMethod('first'),
 
-    as : queryMethod('as'),
+    as: queryMethod('as'),
 
-    pluck : queryMethod('pluck'),
+    pluck: queryMethod('pluck'),
 
-    transacting : queryMethod('transacting'),
+    transacting: queryMethod('transacting'),
 
-    forUpdate : queryMethod('forUpdate'),
+    forUpdate: queryMethod('forUpdate'),
 
-    forShare : queryMethod('forShare'),
+    forShare: queryMethod('forShare'),
 
-
-    page : function(page, pageSize) {
-      page = page - 1;
-      var start =  page * pageSize;
-      var end = (page + 1) * pageSize - 1;
+    page(page, pageSize) {
+      const start = (page - 1) * pageSize;
+      const end = ((page + 1) * pageSize) - 1;
 
       return this.range(start, end);
     },
 
-    range : function(start, end) {
+    range(start, end) {
       return this
-        .limit(end - start + 1)
+        .limit((end - start) + 1)
         .offset(start);
-    }
-  }
+    },
+  },
 });
 
 module.exports = Krypton.Knex;
