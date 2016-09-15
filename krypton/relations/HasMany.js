@@ -11,7 +11,6 @@ Krypton.Relation.HasMany = Class(Krypton.Relation, 'HasMany').inherits(Krypton.R
       records = _.flatten(records);
 
       const recordIds = records.map((item) => item[_.camelCase(relation.ownerCol)]);
-
       const query = relation.relatedModel.query(this.knex);
 
       query.whereIn(relation.relatedCol, recordIds);

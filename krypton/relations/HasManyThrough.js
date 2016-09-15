@@ -10,7 +10,7 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation,
       fetch(records) {
         const relation = this;
 
-        return Promise.map(records, (record) => {
+        return Promise.each(records, (record) => {
           const query = relation.relatedModel.query(relation.knex);
 
           query
