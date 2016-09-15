@@ -56,6 +56,7 @@ Class(Krypton.AttachmentStorage, 'S3')
                   if (_err) {
                     return reject(err);
                   }
+
                   const response = {};
 
                   response[version] = {

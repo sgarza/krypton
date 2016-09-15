@@ -1,8 +1,10 @@
+/* eslint max-len: 0 */
 /* globals Krypton, Class, Module */
 
 const fs = require('fs');
 const request = require('request');
 const Promise = require('bluebird');
+const path = require('path');
 
 const LOCAL_URI_REGEXP = /^\//;
 const REMOTE_URI_REGEXP = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
@@ -129,14 +131,16 @@ Krypton.Attachment = Module(Krypton, 'Attachment')({
         readStream = request.get(url);
       }
 
+      const originalFileName = path.parse(readStream.path).base;
+
       return storage.checkConstraints(readStream)
-        .then((readStream) => {
+        .then((_readStream) => {
           const streams = [];
 
           Object.keys(versions).forEach((version) => {
             const transform = versions[version];
 
-            const processedStream = transform(readStream);
+            const processedStream = transform(_readStream);
 
             const result = {};
 
@@ -150,6 +154,10 @@ Krypton.Attachment = Module(Krypton, 'Attachment')({
               const _meta = {};
 
               res.forEach((i) => {
+                Object.keys(i).forEach((k) => {
+                  i[k].originalFileName = originalFileName;
+                });
+
                 Object.assign(_meta, i);
               });
 
