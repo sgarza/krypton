@@ -99,12 +99,14 @@ Krypton.Model = Class(Krypton, 'Model').includes(Krypton.ValidationSupport)({
   },
 
   update(props, data) {
-    return this._query(props).update(data);
+    return this.first(props).then((r) => {
+      return r.updateAttributes(data).save();
+    });
   },
 
   first(props) {
-    return this._query(props).then((results) => {
-      return results[0] || [];
+    return this._query(props).limit(1).then((results) => {
+      return results[0];
     });
   },
 
