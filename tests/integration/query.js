@@ -30,10 +30,13 @@ describe('Model.query', () => {
         return new Model1({
           property1: 'first',
         }).save().then(() => {
+          // this is weird, first object is used for where()
+          // but second is for updateAttributes()
+          // foo_bar <> fooBar
           return Model1.update({
             property_1: 'first',
           }, {
-            property_1: 'second',
+            property1: 'second',
           })
           .then(() => {
             return Model1.first()
