@@ -9,7 +9,7 @@ Module(Krypton, 'ValidationSupport')({
     isValid() {
       const model = this;
 
-      // retrieve custom lenguage from instance, class or default
+      // retrieve custom language from instance, class or default
       const language = this.language || this.constructor.language || Checkit.language;
 
       const checkit = new Checkit(this.constructor.validations, { language });
