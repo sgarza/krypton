@@ -1,4 +1,5 @@
-/* global Class, Module, Krypton, DynamicModel1, DynamicModel2, Model1, Model2 */
+/* global Class, Module, Krypton, DynamicModel1, DynamicModel2, Model1, Model2,
+ImageS3 */
 const im = require('imagemagick-stream');
 const AWS = require('aws-sdk');
 

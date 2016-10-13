@@ -174,7 +174,7 @@ Krypton.Knex = Module(Krypton, 'Knex')({
 
     page(page, pageSize) {
       const start = (page - 1) * pageSize;
-      const end = ((page + 1) * pageSize) - 1;
+      const end = ((page) * pageSize) - 1;
 
       return this.range(start, end);
     },
