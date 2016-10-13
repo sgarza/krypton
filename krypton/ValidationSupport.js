@@ -9,7 +9,10 @@ Module(Krypton, 'ValidationSupport')({
     isValid() {
       const model = this;
 
-      const checkit = new Checkit(this.constructor.validations);
+      // retrieve custom language from instance, class or default
+      const language = this.language || this.constructor.language || Checkit.language;
+
+      const checkit = new Checkit(this.constructor.validations, { language });
 
       return runHooks(model._beforeValidation)
         .then(() => {
@@ -18,6 +21,6 @@ Module(Krypton, 'ValidationSupport')({
         .then(() => {
           return runHooks(model._afterValidation);
         });
-    }
-  }
+    },
+  },
 });
