@@ -23,6 +23,16 @@ Krypton.Relation.HasMany = Class(Krypton.Relation, 'HasMany').inherits(Krypton.R
         query.orderBy.apply(query, relation.orderBy);
       }
 
+      Object.keys(relation.filters || {}).forEach((filter) => {
+        let args = relation.filters[filter];
+
+        if (!Array.isArray(args)) {
+          args = [args];
+        }
+
+        query[filter].apply(query, args);
+      });
+
       return query.then((result) => {
         records.forEach((record) => {
           const asoc = result.filter((item) => {

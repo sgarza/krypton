@@ -18,6 +18,16 @@ Krypton.Relation.HasOne = Class(Krypton.Relation, 'HasOne').inherits(Krypton.Rel
         query.andWhere.apply(query, relation.scope);
       }
 
+      Object.keys(relation.filters || {}).forEach((filter) => {
+        let args = relation.filters[filter];
+
+        if (!Array.isArray(args)) {
+          args = [args];
+        }
+
+        query[filter].apply(query, args);
+      });
+
       return query.then((result) => {
         records.forEach((record) => {
           const asoc = result.filter((item) => {

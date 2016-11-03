@@ -32,6 +32,16 @@ Krypton.Relation.HasManyThrough = Class(Krypton.Relation,
             query.orderBy.apply(query, relation.orderBy);
           }
 
+          Object.keys(relation.filters || {}).forEach((filter) => {
+            let args = relation.filters[filter];
+
+            if (!Array.isArray(args)) {
+              args = [args];
+            }
+
+            query[filter].apply(query, args);
+          });
+
           return query
             .then((results) => {
               record[relation.name] = results;
